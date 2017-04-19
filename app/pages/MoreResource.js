@@ -1,150 +1,159 @@
 import React, { Component } from 'react';
-import {TouchableHighlight,ListView,Image,Text,Platform,BackAndroid,View,StyleSheet ,ActivityIndicator,TouchableOpacity} from 'react-native';
+import {TouchableHighlight,ListView,Image,Text,Platform,BackAndroid,View,StyleSheet ,ActivityIndicator,TouchableOpacity,  ScrollView,
+  RefreshControl,} from 'react-native';
 
 var Tools = require('../utils/Tools');
 var Theme = require('../utils/Theme');
-import {PullList} from 'react-native-pull';
 import Cartoon from '../ui/Cartoon';
-var id ;
+import Storage from '../utils/Storage';
+import TitleView from '../commodules/Maintitle';
+var page=1 ;
 
 export default class MoreResource extends React.Component {
 
   constructor(props) {
     super(props);
-    this.dataSource = [{
-         id: 0, 
-     }];
-    this.state = {
-       list: (new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})),
-       title:'',
-       nomore:1,
+    this.state={
+      FloorCardData:null
     };
- this.renderRow = this.renderRow.bind(this);
- this.renderFooter = this.renderFooter.bind(this);
-
-  this.getDatas = this.getDatas.bind(this);
   }
-  onPullRelease(resolve) {
-  //do something
-  setTimeout(() => {
-          resolve();
-      }, 3000);
+
+  async getListData(latitude,longitude){
+    var urt='';
+    if (this.props.dto) {
+      urt='&parentId='+this.props.dto.id;
+    }
+    var url = Tools.URL.BASE_URL+'product/listByFloorCard?longitude='+longitude+'&latitude='+latitude+'&page='+1+'&size='+(20*page)+'&userId='+Tools.URL.USER.id+urt;
+    let response = await fetch(url);
+    let responseJson = await response.json();
+    console.warn(responseJson.code);
+    if (responseJson.code===1000) {
+      this.setState({
+        isRefreshing:false,
+        FloorCardData: responseJson.data,
+      })
+    }
   }
-  topIndicatorRender(pulling, pullok, pullrelease) {
-          const hide = {position: 'absolute', left: -10000};
-          const show = {position: 'relative', left: 0};
-          if (pulling) {
-              this.txtPulling && this.txtPulling.setNativeProps({style: show});
-              this.txtPullok && this.txtPullok.setNativeProps({style: hide});
-              this.txtPullrelease && this.txtPullrelease.setNativeProps({style: hide});
-          } else if (pullok) {
-              this.txtPulling && this.txtPulling.setNativeProps({style: hide});
-              this.txtPullok && this.txtPullok.setNativeProps({style: show});
-              this.txtPullrelease && this.txtPullrelease.setNativeProps({style: hide});
-          } else if (pullrelease) {
-              this.txtPulling && this.txtPulling.setNativeProps({style: hide});
-              this.txtPullok && this.txtPullok.setNativeProps({style: hide});
-              this.txtPullrelease && this.txtPullrelease.setNativeProps({style: show});
-          }
-  		return (
-              <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: 60}}>
-                  <ActivityIndicator size="small" color={Theme.Theme.color} />
+  getStatus(data){
 
-      		</View>
-          );
-  	}
-
-    renderHeader() {
-      return (
-          null
-      );
+    if (data.onOffStatus===0) {
+      return '离线';
     }
-
-    renderRow(item, sectionID, rowID, highlightRow) {
-      return (
-        <TouchableOpacity activeOpacity={0.8} onPress={()=>this.binnerImagePress(item.type,item.id)}>
-          <View style={styles.itemViewStyle} flexDirection={'column'} alignItems={'center'}>
-             <Image  style={{width:Tools.ScreenSize.width /3.5,height:Tools.ScreenSize.width /3.5,borderRadius:2,resizeMode: 'stretch'}} source={{uri:item.showImage}}/>
-             <Text style={{textAlign:'center',fontSize:13,color:'#333333',marginTop:3}}>{item.name}</Text>
-             <Text numberOfLines={1} style={{ textAlign:'center',width: Tools.ScreenSize.width /3.5,fontSize:10,color:'#666666',marginTop:3}}>{item.title}</Text>
-          </View>
-        </TouchableOpacity>
-      );
+    if (data.washStatus === 2) {
+          return("空闲");
+      } else if ( data.washStatus === 1 || data.washStatus === 3) {
+          return (data.washStatus === 1 ? "使用中" : "已预约");
+      } else {
+          return "未知";
     }
+  }
 
-    renderFooter() {
-      if(this.state.nomore) {
-          return null;
+
+    getStatusColor(data){
+
+      if (data.onOffStatus===0) {
+        return '#EE1F09';
       }
-      return (
-          <View style={{height: 100}}>
-              <ActivityIndicator color={Theme.Theme.color}/>
-          </View>
-      );
+      if (data.washStatus === 2) {
+        return '#08c847';
+        } else if ( data.washStatus === 1 || data.washStatus === 3) {
+             return '#EE1F09';;
+        } else {
+        return '#EE1F09';
+      }
     }
 
-    binnerImagePress(type,resourceId){
-      Tools.toastShort('type='+type+', resourceId = '+resourceId ,false);
+    getUseed(is,tag){
+      if(is){
+        return null;
+      }
+      return(<Text style={{backgroundColor:'#5A97F3',color:'#ffffff',fontSize: 15 , marginLeft:10 ,padding:1,paddingRight:5,paddingLeft:5,borderRadius:3}}>{tag}</Text>);
+    }
+
+
+    _onRefresh(){
+      page=1;
+      Storage.get('Geolocation').then(data=>{
+          this.getListData(data.latitude,data.longitude);
+      });
+    }
+
+    LookDetail(data){
+      // TODO  如果未登录则跳转登录界面
+      // TODO  如果是预约状态或者是使用状态则跳转订单详情页 （是自己使用或者预约）
       const { navigator } = this.props;
-      if (navigator) {
-        if (type===2) {
-          navigator.push({
-                   name: 'Cartoon',
-                   component: Cartoon,
-                   params: {
-                      id:resourceId,
-                  }
-               });
-        }
-      }
-
+            navigator.push({
+              name: 'Cartoon',
+              component:Cartoon,
+              params: {
+                dto:data
+              }
+            });
     }
-    // loadMore() {
-    //       this.dataSource.push({
-    //           id: 0,
-    //           title: 'begin to create data ...',
-    //       });
-    //       for(var i = 0; i < 1; i++) {
-    //           this.dataSource.push({
-    //               id: i + 1,
-    //               title: 'this is ${i}',
-    //           })
-    //       }
-    //       this.dataSource.push({
-    //           id: 6,
-    //           title:'finish create data ...',
-    //       });
-    //       setTimeout(() => {
-    //           this.setState({
-    //               list: this.state.list.cloneWithRows(this.dataSource)
-    //           });
-    //       }, 1000);
-    //   }
-
 
   render(){
+
+    var recommend;
+    if (this.state.FloorCardData) {
+    recommend=(
+      this.state.FloorCardData.map((data,i)=>{
+         var color = this.getStatusColor(data);
+         var Used = this.getUseed(data.collection===0,'常用');
+         var colleced = this.getUseed(data.isUse===0,'收藏');
+          return (
+            <TouchableOpacity activeOpacity={0.8} key={i} onPress={()=>this.LookDetail(data)}>
+              <View style={{flex:1,flexDirection:'row',backgroundColor:'#fFffff',marginLeft:10,marginTop:10, marginRight:10}}>
+                <View style={{backgroundColor:color,width:3}}/>
+                <View style={{flex:1,backgroundColor:'#ffffff',marginLeft:15,paddingTop:5,paddingBottom:5}}>
+                  <Text style={{color:'#000000',fontSize: 15}}>{data.showName}</Text>
+                  <View style={{ alignItems:'flex-end',flexDirection:'row',marginTop:2}}>
+                    <Text style={{backgroundColor:color,color:'#ffffff',fontSize: 15,padding:1,borderRadius:3,paddingRight:5,paddingLeft:5}}>{this.getStatus(data)}</Text>
+                    {Used}
+                    {colleced}
+                    <View style={{flex:1, alignItems:'flex-end'}} >
+                        <Text>{data.distance}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </TouchableOpacity>)
+          })
+    );
+    }
     return(
       <View style={styles.container}>
-        <View style={styles.titleView}>
-          <TouchableHighlight onPress={this.onBackAndroid}>
-            <Image style={{tintColor:Theme.Theme.color}} source={require('../image/nav_finish.png')} />
-          </TouchableHighlight>
-          <Text style={{color:'#333333',fontSize: 18,marginRight:5}}>{this.state.title}</Text>
-          <Text style={{color:'#333333',fontSize: 18}}></Text>
-        </View>
-        <PullList
-                  style={{}}
-                  onPullRelease={this.onPullRelease} topIndicatorRender={this.topIndicatorRender} topIndicatorHeight={60}
-                  renderHeader={this.renderHeader}
-                  dataSource={this.state.list}
-                  pageSize={5}
-                  initialListSize={5}
-                  renderRow={this.renderRow}
-                  onEndReached={this.getDatas}
-                  onEndReachedThreshold={60}
-                  renderFooter={this.renderFooter}
-                  />
-        </View>)
+       <TitleView
+         ClickLeft={()=>{this.onBackAndroid()}}
+         leftIcon={<Image tintColor={'#ffffff'} source={require('../image/nav_finish.png')}/>}
+         />
+
+       <View style={{backgroundColor:Theme.Theme.color,height:50}}>
+         <Text style={{color:'#ffffff',marginLeft:10}}>{this.props.dto.showName}</Text>
+         <View style={{flexDirection:'row',backgroundColor:Theme.Theme.color,marginTop:3}}>
+           <Text style={{color:'#b9cae0',marginLeft:10}}>洗衣机{this.props.dto.number}台</Text>
+           <Text style={{color:'#b9cae0',marginLeft:10}}>空闲{this.props.dto.freeNumber}台</Text>
+             <View style={{flex:1, alignItems:'flex-end',marginRight:10}} >
+                <Text style={{color:'#b9cae0'}}>{this.props.dto.distance}</Text>
+             </View>
+         </View>
+       </View>
+       <ScrollView
+         backgroundColor={'#f0ffff'}
+         refreshControl={
+         <RefreshControl
+           refreshing={this.state.isRefreshing}
+           onRefresh={()=>{this._onRefresh();}}
+           tintColor="#ff0000"
+           title="Loading..."
+           titleColor="#00ff00"
+           colors={[Theme.Theme.color]}
+           progressBackgroundColor="#ffffff"
+         />
+       }
+       >
+      {recommend}
+    </ScrollView>
+    </View>)
 
   }
 
@@ -171,29 +180,11 @@ export default class MoreResource extends React.Component {
  }
 
   componentDidMount() {
-      id = this.props.id;
-      this.setState({
-          title: this.props.title,
+      Storage.get('Geolocation').then(data=>{
+          this.getListData(data.latitude,data.longitude);
       });
-      this.getDatas;
   }
 
-
-  getDatas(){
-    fetch('http://wodm.9mobi.cn/api/v1/column/findResourceByColumnId?columnId='+id)
-          .then((response) => response.json())
-          .then((responseJson) => {
-            setTimeout(() => {
-                this.setState({
-                    list: this.state.list.cloneWithRows(responseJson.data)
-                });
-            }, 1000)
-
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-  }
 }
 
 const styles = StyleSheet.create({

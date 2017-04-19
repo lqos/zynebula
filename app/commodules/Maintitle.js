@@ -23,18 +23,19 @@ export default class Maintitle extends Component {
          <View style={styles.titleView} >
            <TouchableOpacity onPress={this.props.ClickLeft}>
            <View width={50}>
-              <Image style={{tintColor:Theme.Theme.color}} source={this.props.leftIcon} />
+              {this.props.leftIcon}
            </View>
            </TouchableOpacity>
            <Text style={{color:this.props.titleColor,fontSize: 18}}>{this.props.title}</Text>
            <TouchableOpacity onPress={this.props.ClickRight}>
              <View width={50}  alignItems={'flex-end'}>
-               <Image style={{tintColor:Theme.Theme.color}} source={this.props.rightIcon} />
+              {this.props.rightIcon} 
             </View>
           </TouchableOpacity>
           </View>
        );
    }
+
 }
 
 const styles = StyleSheet.create({

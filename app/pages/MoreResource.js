@@ -104,7 +104,7 @@ export default class MoreResource extends React.Component {
             <TouchableOpacity activeOpacity={0.8} key={i} onPress={()=>this.LookDetail(data)}>
               <View style={{flex:1,flexDirection:'row',backgroundColor:'#fFffff',marginLeft:10,marginTop:10, marginRight:10}}>
                 <View style={{backgroundColor:color,width:3}}/>
-                <View style={{flex:1,backgroundColor:'#ffffff',marginLeft:15,paddingTop:5,paddingBottom:5}}>
+                <View style={{flex:1,backgroundColor:'#ffffff',marginLeft:15,paddingTop:8,paddingBottom:8}}>
                   <Text style={{color:'#000000',fontSize: 15}}>{data.showName}</Text>
                   <View style={{ alignItems:'flex-end',flexDirection:'row',marginTop:2}}>
                     <Text style={{backgroundColor:color,color:'#ffffff',fontSize: 15,padding:1,borderRadius:3,paddingRight:5,paddingLeft:5}}>{this.getStatus(data)}</Text>

@@ -218,15 +218,15 @@ LookDetail(data){
          var colleced = this.getUseed(data.isUse===0,'收藏');
           return (
             <TouchableOpacity activeOpacity={0.8} key={i} onPress={()=>this.LookDetail(data)}>
-              <View style={{flex:1,flexDirection:'row',backgroundColor:'#fFffff',marginLeft:10,marginTop:10, marginRight:10}}>
+              <View style={{flex:1,flexDirection:'row',backgroundColor:'#fFffff',marginLeft:10,marginTop:8, marginRight:10}}>
                 <View style={{backgroundColor:color,width:3}}/>
-                <View style={{flex:1,backgroundColor:'#ffffff',marginLeft:15,paddingTop:5,paddingBottom:5}}>
-                  <Text style={{color:'#000000',fontSize: 15}}>{data.showName}</Text>
+                <View style={{flex:1,backgroundColor:'#ffffff',marginLeft:15,paddingTop:8,paddingBottom:8}}>
+                  <Text style={styles.labeStyle}>{data.showName}</Text>
                   <View style={{ alignItems:'flex-end',flexDirection:'row',marginTop:2}}>
                     <Text style={{backgroundColor:color,color:'#ffffff',fontSize: 15,padding:1,borderRadius:3,paddingRight:5,paddingLeft:5}}>{this.getStatus(data)}</Text>
                     {Used}
                     {colleced}
-                    <View style={{flex:1, alignItems:'flex-end'}} >
+                    <View style={{flex:1, alignItems:'flex-end',marginRight:10}} >
                         <Text>{data.distance}</Text>
                     </View>
                   </View>
@@ -252,14 +252,14 @@ LookDetail(data){
                        }
                      });
                }}>
-               <View style={{flex:1,flexDirection:'row',backgroundColor:'#fFffff',marginLeft:10,marginTop:5, marginRight:10}}>
+               <View style={{flex:1,flexDirection:'row',backgroundColor:'#fFffff',marginLeft:10,marginBottom:5, marginRight:10}}>
                  <View style={{backgroundColor:'#08c847',width:3}}/>
-                 <View style={{flex:1,backgroundColor:'#ffffff',marginLeft:15,paddingTop:5,paddingBottom:5}}>
-                   <Text style={{color:'#000000',fontSize: 15}}>{data.showName}</Text>
+                 <View style={{flex:1,backgroundColor:'#ffffff',marginLeft:15,paddingTop:8,paddingBottom:8}}>
+                   <Text style={styles.labeStyle}>{data.showName}</Text>
                    <View style={{ alignItems:'flex-end',flexDirection:'row',marginTop:3}}>
                      <Text style={{backgroundColor:'#08c847',color:'#ffffff',fontSize: 15,padding:1,borderRadius:3,paddingRight:5,paddingLeft:5}}>{data.freeNumber}台空闲</Text>
 
-                     <View style={{flex:1, alignItems:'flex-end'}} >
+                     <View style={{flex:1, alignItems:'flex-end',marginRight:10}} >
                          <Text>{data.distance}</Text>
                      </View>
                    </View>
@@ -285,13 +285,13 @@ LookDetail(data){
       }
       >
       {Swiperview}
-      <View flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} flex={1} padding={10}>
-        <Text style={{color:'#000000',fontSize: 16}}>{this.state.LeftName}</Text>
-        <Text style={{color:'#000000',fontSize: 16}}>{this.state.schoolName}</Text>
+      <View flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} flex={1} paddingLeft={10}paddingRight={10}paddingTop={10}>
+        <Text style={styles.labeStyle}>{this.state.LeftName}</Text>
+        <Text style={styles.labeStyle}>{this.state.schoolName}</Text>
       </View>
        {recommend}
        <View flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} flex={1} padding={10}>
-         <Text style={{color:'#000000',fontSize: 16}}>附近洗衣机</Text>
+         <Text style={styles.labeStyle}>附近洗衣机</Text>
        </View>
        {pointView}
        <TouchableOpacity activeOpacity={0.8} onPress={()=>{
@@ -300,8 +300,8 @@ LookDetail(data){
              this.getFloorCard(data.latitude,data.longitude,this.state.schoolobj.id);
          });
          }}>
-         <View style={{flex:1, alignItems:'center',marginTop:5}}>
-             <Text style={{fontSize:17,color:'#333333'}}>显示更多</Text>
+         <View style={{flex:1, alignItems:'center',marginTop:5,marginBottom:5}}>
+             <Text style={styles.labeStyle}>显示更多</Text>
          </View>
        </TouchableOpacity>
       </ScrollView>
@@ -311,12 +311,9 @@ LookDetail(data){
 
 
 const styles = StyleSheet.create({
-  listStyle:{
-         flexDirection:'row', //改变ListView的主轴方向
-         flexWrap:'wrap', //换行
-     },
-     itemViewStyle:{
-         alignItems:'center', //这里要注意，如果每个Item都在外层套了一个 Touchable的时候，一定要设置Touchable的宽高
-         width: Tools.ScreenSize.width /3,
+
+     labeStyle:{
+         color:'#333333',
+         fontSize: 16,
      },
 });

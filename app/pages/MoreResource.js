@@ -86,7 +86,8 @@ export default class MoreResource extends React.Component {
               name: 'Cartoon',
               component:Cartoon,
               params: {
-                dto:data
+                dto:data,
+                id:data.id
               }
             });
     }

@@ -181,7 +181,8 @@ LookDetail(data){
           name: 'Cartoon',
           component:Cartoon,
           params: {
-            dto:data
+            dto:data,
+            id:data.id
           }
         });
 }

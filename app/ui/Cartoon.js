@@ -5,9 +5,10 @@ import {
   BackAndroid,
   Platform,
   Navigator,
+  ListView,
   TouchableHighlight,
   Text,
-    Alert,
+  Alert,
   Image,
   StyleSheet
 } from 'react-native';
@@ -23,8 +24,29 @@ export default class Cartoon extends React.Component {
      super(props);
      this.state = {
         title:'wow',
+        dataSource:new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
      };
+    //
    }
+
+   /***
+   首页附近洗衣机点列表
+   **/
+   async getFloorCard(id){
+
+     var url = Tools.URL.BASE_URL+'product/package?productId='+id;
+      Alert.alert(url);
+     let response = await fetch(url);
+     let responseJson = await response.json();
+     if (responseJson.code===1000) {
+       var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+       this.setState({
+         dataSource: ds.cloneWithRows(this._data),
+       })
+     }
+   }
+
+
    getStatus(data){
 
      if (data.onOffStatus===0) {
@@ -66,6 +88,7 @@ export default class Cartoon extends React.Component {
      render(){
        var topView;
        if (this.props.dto) {
+
          var color = this.getStatusColor(this.props.dto);
          var Used = this.getUseed(this.props.dto.collection===0,'常用');
          var colleced = this.getUseed(this.props.dto.isUse===0,'收藏');
@@ -98,6 +121,7 @@ export default class Cartoon extends React.Component {
            <View style={{backgroundColor:Theme.Theme.color,height:35}}>
              </View>
              {topView}
+      
          </View>)
      }
      componentWillMount() {
@@ -131,23 +155,16 @@ export default class Cartoon extends React.Component {
              ]
            );
       }
+
+      this.getFloorCard(this.props.id);
     }
 }
 
 
 const styles = StyleSheet.create({
-  titleView:{
-    paddingLeft:10,
-    paddingRight:10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor:'#0000',
-    alignItems: 'center',
-    height:50,
-  },
   container: {
   flex: 1,
   flexDirection: 'column',
-  backgroundColor: '#F5FCFF',
+  backgroundColor: '#f0ffff',
 },
 })

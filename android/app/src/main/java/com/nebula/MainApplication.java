@@ -10,6 +10,7 @@ import com.facebook.soloader.SoLoader;
 import org.lovebing.reactnative.baidumap.BaiduMapPackage;
 import java.util.Arrays;
 import java.util.List;
+import com.theweflex.react.WeChatPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -22,7 +23,7 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
-          new MainReactPackage(),new BaiduMapPackage(getApplicationContext())
+          new MainReactPackage(),new BaiduMapPackage(getApplicationContext()),new WeChatPackage()
       );
     }
   };

@@ -14,19 +14,21 @@ import {
   Geolocation
 } from 'react-native-baidu-map';
 import Storage from '../utils/Storage';
-
+import * as WeChat from 'react-native-wechat';
 export default class Splash extends React.Component {
 
   componentDidMount() {
     this.getCurrentPosition();
-  this.timer = setTimeout(() => {
-    const { navigator } = this.props;
-     navigator.push({
-              name: 'Main',
-              component: Home
-          });
-  }, 1000);
+    WeChat.registerApp('wx5199f2a6aceb216e');
+    this.timer = setTimeout(() => {
+      const { navigator } = this.props;
+       navigator.push({
+                name: 'Main',
+                component: Home
+            });
+    }, 1000);
 }
+
 
 componentWillUnmount() {
   clearTimeout(this.timer);
@@ -39,7 +41,7 @@ componentWillUnmount() {
  getCurrentPosition(){
    Geolocation.getCurrentPosition()
                .then(data => {
-                 Storage.save('Geolocation',data); 
+                 Storage.save('Geolocation',data);
                })
                .catch(e =>{
                  console.warn(e, 'error');

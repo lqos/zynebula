@@ -3,10 +3,8 @@ import {
   Text,
   StyleSheet,
   View,
-  TouchableHighlight,
   Image,
-  StatusBar,
-  TouchableOpacity,
+  StatusBar, 
 } from 'react-native';
 
 import TabNavigator from 'react-native-tab-navigator';

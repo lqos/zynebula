@@ -6,7 +6,7 @@ import {
   Platform,
   Navigator,
   ListView,
-  TouchableHighlight,
+  TouchableOpacity,
   Text,
   Alert,
   Image,
@@ -17,14 +17,13 @@ var Tools = require('../utils/Tools');
 import Storage from '../utils/Storage';
 var id ;
 import TitleView from '../commodules/Maintitle';
-
+var checkIndex = -1;
 export default class Cartoon extends React.Component {
 
   constructor(props) {
      super(props);
      this.state = {
-        title:'wow',
-        dataSource:new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
+        packageData:new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
      };
     //
    }
@@ -35,14 +34,15 @@ export default class Cartoon extends React.Component {
    async getFloorCard(id){
 
      var url = Tools.URL.BASE_URL+'product/package?productId='+id;
-      Alert.alert(url);
+
      let response = await fetch(url);
      let responseJson = await response.json();
      if (responseJson.code===1000) {
-       var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+      console.warn(JSON.stringify(responseJson));
+        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
        this.setState({
-         dataSource: ds.cloneWithRows(this._data),
-       })
+         packageData:ds.cloneWithRows(responseJson.data),
+       });
      }
    }
 
@@ -121,9 +121,67 @@ export default class Cartoon extends React.Component {
            <View style={{backgroundColor:Theme.Theme.color,height:35}}>
              </View>
              {topView}
-      
+
+             <ListView
+               margin={25}
+
+        dataSource={this.state.packageData}
+        renderRow={(data) => this.getPackageView(data)}
+      />
+
+
+      <View style={{flex:1,alignItems:'center', justifyContent: 'center', justifyContent: 'center' }} activeOpacity={0.8} onPress={()=>this.onClick('2')}>
+        <Text>最后消毒时间：{Tools.timeFormt(this.props.dto.lastCleanTime)}</Text>
+      </View>
+    <View style={{alignItems:'flex-end',flexDirection:'row',flex:1,justifyContent:'flex-end'}}>
+         <TouchableOpacity style={{backgroundColor:'#2275fe',alignItems:'center', justifyContent: 'center',height:50, width:Tools.ScreenSize.width/2}} activeOpacity={0.8} onPress={()=>this.onClick('1')}>
+              <Text style={{color:'white'}}>预约使用</Text>
+         </TouchableOpacity>
+         <TouchableOpacity style={{backgroundColor:'#08c847',alignItems:'center', justifyContent: 'center',height:50, width:Tools.ScreenSize.width/2}} activeOpacity={0.8} onPress={()=>this.onClick('2')}>
+              <Text  style={{color:'white'}} >立即使用</Text>
+         </TouchableOpacity>
+      </View>
          </View>)
      }
+
+     getPackageView(data){
+       if (checkIndex===-1) {
+         checkIndex = data.id;
+       }
+       var check = require('../image/nocheck_de.png');
+       if (data.id === checkIndex) {
+          check = require('../image/check_ed.png');
+       }
+       return (
+         <TouchableOpacity activeOpacity={0.8} onPress={()=>this.onselect(data.id)}>
+         <View style={{ alignItems:'center',flexDirection: 'row',padding:16,backgroundColor:'#ffffff', marginTop:0.6 }}>
+              <Image source={{uri: data.icon}} style={{width: 30, height: 30,marginRight:10,marginLeft:10 }} />
+              <View style={{flexDirection: 'column'}}>
+                <Text style={{color:'#000000'}}>{data.name}</Text>
+                <Text>{data.desp}</Text>
+              </View>
+              <View style={{flexDirection: 'row',justifyContent:'flex-end',flex:1}}>
+                 <Text>{data.spend/100}元</Text>
+                 <Image source={check} style={{width: 30, height: 30,marginRight:10,marginLeft:10 }} />
+              </View>
+          </View>
+        </TouchableOpacity>
+        );
+     }
+
+     onselect(id){
+       if(checkIndex === id){
+         return;
+       }
+       checkIndex =id;
+       this.setState({
+       });
+     }
+
+     onClick(id){
+       Tools.toastShort(id,false);
+     }
+
      componentWillMount() {
         if (Platform.OS === 'android') {
           BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);

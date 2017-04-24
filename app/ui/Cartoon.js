@@ -18,9 +18,7 @@ import Storage from '../utils/Storage';
 var id ;
 import TitleView from '../commodules/Maintitle';
 var checkIndex = -1;
-import * as WeChat from 'react-native-wechat';
-import * as http from '../utils/Tools';
-RequestUtil
+import * as WeChat from 'react-native-wechat'; 
 
 export default class Cartoon extends React.Component {
 

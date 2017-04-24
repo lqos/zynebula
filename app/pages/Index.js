@@ -23,6 +23,7 @@ import Swiper from 'react-native-swiper';
 import Storage from '../utils/Storage';
 import MoreResource from './MoreResource';
 import Cartoon from '../ui/Cartoon';
+import * as http from '../utils/RequestUtil';
 var page=1;
 export default class Index extends React.Component {
 
@@ -68,27 +69,21 @@ export default class Index extends React.Component {
     /**
     或取首页推荐设备 或者正在使用的设备
     */
-    async getRecommend(latitude,longitude,id){
-      var urt='';
-      if (id) {
-        urt='&parentId='+id;
-      }
-      var url = Tools.URL.BASE_URL+'product/recommend?longitude='+longitude+'&latitude='+latitude+'&userId='+Tools.URL.USER.id+urt;
-
-      let response = await fetch(url);
-      let responseJson = await response.json();
-
-      let name = '为您推荐' ;
-      if (responseJson.code===1000) {
-        name='为您推荐';
-      }else if (responseJson.code===2000) {
-        name='正在使用';
-      }
-      this.setState({
-        isRefreshing:false,
-        LeftName: name,
-        RecommendData: responseJson.data,
-      })
+     getRecommend(latitude,longitude,id){
+      let params = {'latitude':latitude,longitude:longitude,'userId': Tools.URL.USER.id, 'parentId': id};
+      http.get('product/recommend',params).then((responseJson)=>{
+        let name = '为您推荐' ;
+        if (responseJson.code===1000) {
+          name='为您推荐';
+        }else if (responseJson.code===2000) {
+          name='正在使用';
+        }
+        this.setState({
+          isRefreshing:false,
+          LeftName: name,
+          RecommendData: responseJson.data,
+        })
+      }); 
     }
 
      /**

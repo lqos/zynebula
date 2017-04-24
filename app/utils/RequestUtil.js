@@ -15,32 +15,88 @@
  * limitations under the License.
  *
  */
-const HOST = 'https://dev.nebulaedu.com/api/v1/',//测试  正式https://nebulaedu.com/api/v1/
+const HOST = 'https://dev.nebulaedu.com/api/v1/';//测试  正式https://nebulaedu.com/api/v1/
 
-export const request = (url, method, body) => {
-  let isOk;
-  return new Promise((resolve, reject) => {
-    fetch(HOST + url, {
-      method,
-      body
+export const get = (url,params)=>{
+  if (params) {
+      let paramsArray = [];
+    //拼接参数
+    Object.keys(params).forEach(key => paramsArray.push(key + '=' + params[key]))
+    if (url.search(/\?/) === -1) {
+      url += '?' + paramsArray.join('&')
+    } else {
+      url += '&' + paramsArray.join('&')
+    }
+  }
+  return new Promise((resolve, reject) =>{
+    fetch(HOST+url)
+    .then((response) =>response.json())
+    .then((responseData)=>{
+      resolve(responseData);
+    }).catch((error)=>{
+      reject(error);
     })
-      .then((response) => {
-        if (response.ok) {
-          isOk = true;
-        } else {
-          isOk = false;
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        if (isOk) {
-          resolve(responseData);
-        } else {
-          reject(responseData);
-        }
-      })
-      .catch((error) => {
-        reject(error);
-      });
+    .done();
+  });
+};
+
+
+export const post = (url,params)=>{
+  if (params) {
+      let paramsArray = [];
+    //拼接参数
+    Object.keys(params).forEach(key => paramsArray.push(key + '=' + params[key]))
+    if (url.search(/\?/) === -1) {
+      url += '?' + paramsArray.join('&')
+    } else {
+      url += '&' + paramsArray.join('&')
+    }
+  }
+  return new Promise((resolve, reject) =>{
+    fetch(HOST+url,{
+      method: 'POST',
+      headers:{
+        token:'',
+        userId:''
+      }
+    })
+    .then((response) =>response.json())
+    .then((responseData)=>{
+      resolve(responseData);
+    }).catch((error)=>{
+      reject(error);
+    })
+    .done();
+  });
+};
+
+
+export const postJson = (url,params,body)=>{
+  let paramsArray = [];
+  if (params) {
+    //拼接参数
+    Object.keys(params).forEach(key => paramsArray.push(key + '=' + params[key]))
+    if (url.search(/\?/) === -1) {
+      url += '?' + paramsArray.join('&')
+    } else {
+      url += '&' + paramsArray.join('&')
+    }
+  }
+  return new Promise((resolve, reject) =>{
+    fetch(HOST+url,{
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body:(body)
+    })
+    .then((response) =>response.json())
+    .then((responseData)=>{
+      resolve(responseData);
+    }).catch((error)=>{
+      reject(error);
+    })
+    .done();
   });
 };

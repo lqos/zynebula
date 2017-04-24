@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
   Text,
   StyleSheet,
-  navigator,
   TouchableOpacity,
   Image,
   ScrollView,
@@ -16,6 +15,7 @@ import SetUi from '../ui/SetUi' ;
 import ScoreUi from '../ui/ScoreUI' ;
 import SellectUI from '../ui/SellectUI' ;
 import MessageUI from '../ui/MessageUI' ;
+import LogUi from '../ui/LogIn' ;
 
 export default class Us extends React.Component {
 
@@ -41,7 +41,7 @@ export default class Us extends React.Component {
                 </TouchableOpacity>
           </View>
           <View style={{ flex:1,flexDirection:'column',alignItems:'center',justifyContent: 'center'}} >
-              <TouchableOpacity onPress={this.selectImg}>
+              <TouchableOpacity onPress={()=>this.setTabindex(99)}>
                 <Image style={{width:80, height:80,resizeMode:'contain'}} source={require('../image/icon_header.png')}  />
               </TouchableOpacity>
               <Text style={{fontSize:16,color:'#333'}}>请登录
@@ -173,47 +173,13 @@ export default class Us extends React.Component {
               component: MessageUI,
         });
 
+    } else if (index===99){
+      navigator.push({
+            title: 'LogUi',
+            component: LogUi,
+      });
     }
 
-  }
-
-  selectImg(){
-    var options = {
-  title: '选择头像',
-  cancelButtonTitle: '取消',
-  takePhotoButtonTitle: '拍照', // 调取摄像头的按钮，可以设置为空使用户不可选择拍照
-  chooseFromLibraryButtonTitle: '相册', // 调取相册的按钮，可以设置为空使用户不可选择相册照片
-  customButtons: [
-  ],
-  mediaType: 'photo', // 'photo' or 'video'
-};
-/**
- * The first arg is the options object for customization (it can also be null or omitted for default options),
- * The second arg is the callback which sends object: response (more info below in README)
- */
-ImagePicker.showImagePicker(options, (response) => {
-  console.log('Response = ', response);
-
-  if (response.didCancel) {
-    console.log('User cancelled image picker');
-  }
-  else if (response.error) {
-    console.log('ImagePicker Error: ', response.error);
-  }
-  else if (response.customButton) {
-    console.log('User tapped custom button: ', response.customButton);
-  }
-  else {
-    let source = { uri: response.uri };
-
-    // You can also display the image using data:
-    // let source = { uri: 'data:image/jpeg;base64,' + response.data };
-
-    this.setState({
-      header: source
-    });
-  }
-});
   }
 
 }

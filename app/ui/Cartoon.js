@@ -158,15 +158,15 @@ export default class Cartoon extends React.Component {
        }
        return (
          <TouchableOpacity activeOpacity={0.8} onPress={()=>this.onselect(data.id)}>
-         <View style={{ alignItems:'center',flexDirection: 'row',padding:16,backgroundColor:'#ffffff', marginTop:0.6 }}>
-              <Image source={{uri: data.icon}} style={{width: 30, height: 30,marginRight:10,marginLeft:10 }} />
+         <View style={{ alignItems:'center',flexDirection: 'row',padding:8,backgroundColor:'#ffffff', marginTop:0.6 }}>
+              <Image source={{uri: data.icon}} style={{width: 30, height: 30,marginRight:5,}} />
               <View style={{flexDirection: 'column'}}>
-                <Text style={{color:'#000000'}}>{data.name}</Text>
-                <Text>{data.desp}</Text>
+                <Text style={{fontSize:16,color:'#000000'}}>{data.name}</Text>
+                <Text style={{fontSize:12}}>{data.desp}</Text>
               </View>
               <View style={{flexDirection: 'row',justifyContent:'flex-end',flex:1}}>
                  <Text>{data.spend/100}元</Text>
-                 <Image source={check} style={{width: 30, height: 30,marginRight:10,marginLeft:10 }} />
+                 <Image source={check} style={{width: 20, height: 20, marginLeft:10 }} />
               </View>
           </View>
         </TouchableOpacity>

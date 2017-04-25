@@ -4,7 +4,7 @@ import {
   StyleSheet,
   View,
   Image,
-  StatusBar, 
+  StatusBar,
 } from 'react-native';
 
 import TabNavigator from 'react-native-tab-navigator';
@@ -128,8 +128,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop:0.31,
     backgroundColor:'#ffffff',
-  }
-, tab: {
+  },tab: {
         height: 52,
         backgroundColor: '#ffffff',
         alignItems: 'center',

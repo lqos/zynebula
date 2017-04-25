@@ -24,6 +24,7 @@ import Storage from '../utils/Storage';
 import MoreResource from './MoreResource';
 import Cartoon from '../ui/Cartoon';
 import * as http from '../utils/RequestUtil';
+import LogUi from '../ui/LogIn' ;
 var page=1;
 export default class Index extends React.Component {
 
@@ -50,19 +51,27 @@ export default class Index extends React.Component {
   首页附近洗衣机点列表
   **/
   async getFloorCard(latitude,longitude,id){
-    var urt='';
+    let urt='';
     if (id) {
       urt='&parentId='+id;
     }
-    var url = Tools.URL.BASE_URL+'product/floorCard?longitude='+longitude+'&latitude='+latitude+'&page='+1+'&size='+(5*page)+'&userId='+Tools.URL.USER.id+urt;
-    let response = await fetch(url);
-    let responseJson = await response.json();
-    if (responseJson.code===1000) {
-      this.setState({
-        isRefreshing:false,
-        FloorCardData: responseJson.data,
-      })
-    }
+    let header={};
+      if (Tools.USER) {
+        header={
+          'token':Tools.USER.token,
+          'userId':Tools.USER.userId
+        };
+      urt=urt+'&userId='+Tools.USER.userId;
+      }
+    http.require('product/floorCard?longitude='+longitude+'&latitude='+latitude+'&page='+1+'&size='+(5*page)+urt,'GET',header,null)
+    .then((responseJson)=>{
+      if (responseJson.code===1000) {
+        this.setState({
+          isRefreshing:false,
+          FloorCardData: responseJson.data,
+        })
+      }
+    });
   }
 
 
@@ -70,9 +79,20 @@ export default class Index extends React.Component {
     或取首页推荐设备 或者正在使用的设备
     */
      getRecommend(latitude,longitude,id){
-      let params = {'latitude':latitude,longitude:longitude,'userId': Tools.URL.USER.id, 'parentId': id};
-      http.get('product/recommend',params).then((responseJson)=>{
+      let urt='';
+      let header={};
+        if (Tools.USER) {
+          header={
+            'token':Tools.USER.token,
+            'userId':Tools.USER.userId
+          };
+        urt=urt+'?userId='+Tools.USER.userId;
+        }
+        console.warn(urt);
+      let params = {'latitude':latitude,longitude:longitude, 'parentId': id};
+      http.require('product/recommend'+urt,'GET',header,params).then((responseJson)=>{
         let name = '为您推荐' ;
+              console.warn(JSON.stringify(responseJson));
         if (responseJson.code===1000) {
           name='为您推荐';
         }else if (responseJson.code===2000) {
@@ -83,7 +103,7 @@ export default class Index extends React.Component {
           LeftName: name,
           RecommendData: responseJson.data,
         })
-      }); 
+      });
     }
 
      /**
@@ -91,34 +111,41 @@ export default class Index extends React.Component {
      */
     async getSchoolName(latitude,longitude){
 
-       var url = Tools.URL.BASE_URL+'product/school?longitude='+longitude+'&latitude='+latitude;
-       let response = await fetch(url);
-       let responseJson = await response.json();
-       this.setState({
-         schoolName: responseJson.data.showName,
-         schoolobj:responseJson.data,
-         isRefreshing:false,
-       })
-       this.getRecommend(latitude,longitude,responseJson.data.id);
-       this.getFloorCard(latitude,longitude,responseJson.data.id);
+      let header={};
+        if (Tools.USER) {
+          header={
+            'token':Tools.USER.token,
+            'userId':Tools.USER.userId
+          };
+        }
+       var url =  'product/school?longitude='+longitude+'&latitude='+latitude;
+
+       http.require(url,'GET',header,null).then((responseJson)=>{
+         this.setState({
+           schoolName: responseJson.data.showName,
+           schoolobj:responseJson.data,
+           isRefreshing:false,
+         })
+         this.getRecommend(latitude,longitude,responseJson.data.id);
+         this.getFloorCard(latitude,longitude,responseJson.data.id);
+       }).catch((err)=>{
+         this.getRecommend(latitude,longitude,'0');
+         this.getFloorCard(latitude,longitude,'0');
+       });
+
      }
 
   /**
   获取首页轮播图
   */
 async  getBanner(){
-    var url = Tools.URL.BASE_URL+'task?type=1';
-    try {
-         // 注意这里的await语句，其所在的函数必须有async关键字声明
-         let response = await fetch(url);
-         let responseJson = await response.json();
+       http.require('task?type=1','GET',null)
+       .then((responseJson)=>{
          this.setState({
            swipData:responseJson.data,
            isRefreshing:false,
          })
-       } catch(error) {
-         console.error(error);
-       }
+       });
   }
 
 
@@ -169,17 +196,25 @@ async  getBanner(){
     }
 
 LookDetail(data){
+      const { navigator } = this.props;
+  if (Tools.USER) {
+    navigator.push({
+      name: 'Cartoon',
+      component:Cartoon,
+      params: {
+        dto:data,
+        id:data.id
+      }
+    });
+  }else{
+    navigator.push({
+          title: 'LogUi',
+          component: LogUi,
+    });
+  }
   // TODO  如果未登录则跳转登录界面
   // TODO  如果是预约状态或者是使用状态则跳转订单详情页 （是自己使用或者预约）
-  const { navigator } = this.props;
-        navigator.push({
-          name: 'Cartoon',
-          component:Cartoon,
-          params: {
-            dto:data,
-            id:data.id
-          }
-        });
+
 }
 
 
@@ -307,7 +342,6 @@ LookDetail(data){
 
 
 const styles = StyleSheet.create({
-
      labeStyle:{
          color:'#333333',
          fontSize: 16,

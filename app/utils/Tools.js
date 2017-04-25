@@ -7,6 +7,19 @@ var Dimensions = require('Dimensions');
 
 
 export var navigator ;
+export var USER;
+export var CURRINTUSER;
+
+export const headers = ()=>{
+  let header={};
+    if (this.USER) {
+      header={
+        'token':this.USER.token,
+        'userId':this.USER.userId
+      };
+    }
+    return header;
+}
 
 export const toastShort = (content, isAlert) => {
   if (isAlert || Platform.OS === 'ios') {
@@ -55,9 +68,7 @@ export const ThemColor = {
   themColor:'#F84A0D'
 };
 //http://192.168.1.10:8001/api/v1/
-export const URL = {
-  BASE_URL:'https://dev.nebulaedu.com/api/v1/',//测试  正式https://nebulaedu.com/api/v1/
-  USER:{
-    id:288
-  }
+export var URL = {
+  BASE_URL:'https://dev.nebulaedu.com/api/v1/',
+
 };

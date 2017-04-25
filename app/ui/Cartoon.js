@@ -15,10 +15,12 @@ import {
 var Theme = require('../utils/Theme');
 var Tools = require('../utils/Tools');
 import Storage from '../utils/Storage';
+import * as http from '../utils/RequestUtil';
 var id ;
+import AlterA from '../commodules/AlterA';
 import TitleView from '../commodules/Maintitle';
 var checkIndex = -1;
-import * as WeChat from 'react-native-wechat'; 
+import * as WeChat from 'react-native-wechat';
 
 export default class Cartoon extends React.Component {
 
@@ -34,18 +36,18 @@ export default class Cartoon extends React.Component {
    首页附近洗衣机点列表
    **/
    async getFloorCard(id){
+     var url = 'product/package?productId='+id;
 
-     var url = Tools.URL.BASE_URL+'product/package?productId='+id;
+     http.require(url,'GET',null).then((responseJson)=>{
+       if (responseJson.code===1000) {
+        console.warn(JSON.stringify(responseJson));
+          var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+         this.setState({
+           packageData:ds.cloneWithRows(responseJson.data),
+         });
+       }
+     });
 
-     let response = await fetch(url);
-     let responseJson = await response.json();
-     if (responseJson.code===1000) {
-      console.warn(JSON.stringify(responseJson));
-        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-       this.setState({
-         packageData:ds.cloneWithRows(responseJson.data),
-       });
-     }
    }
 
 
@@ -132,14 +134,14 @@ export default class Cartoon extends React.Component {
       />
 
 
-      <View style={{flex:1,alignItems:'center', justifyContent: 'center', justifyContent: 'center' }} activeOpacity={0.8} onPress={()=>this.onClick('2')}>
+      <View style={{flex:1,alignItems:'center', justifyContent: 'center', justifyContent: 'center' }} activeOpacity={0.8}>
         <Text>最后消毒时间：{Tools.timeFormt(this.props.dto.lastCleanTime)}</Text>
       </View>
     <View style={{alignItems:'flex-end',flexDirection:'row',flex:1,justifyContent:'flex-end'}}>
-         <TouchableOpacity style={{backgroundColor:'#2275fe',alignItems:'center', justifyContent: 'center',height:50, width:Tools.ScreenSize.width/2}} activeOpacity={0.8} onPress={()=>this.onClick('1')}>
+         <TouchableOpacity style={{backgroundColor:'#2275fe',alignItems:'center', justifyContent: 'center',height:50, width:Tools.ScreenSize.width/2}} activeOpacity={0.8} onPress={()=>this.onClick(1)}>
               <Text style={{color:'white'}}>预约使用</Text>
          </TouchableOpacity>
-         <TouchableOpacity style={{backgroundColor:'#08c847',alignItems:'center', justifyContent: 'center',height:50, width:Tools.ScreenSize.width/2}} activeOpacity={0.8} onPress={()=>this.onClick('2')}>
+         <TouchableOpacity style={{backgroundColor:'#08c847',alignItems:'center', justifyContent: 'center',height:50, width:Tools.ScreenSize.width/2}} activeOpacity={0.8} onPress={()=>this.onClick(2)}>
               <Text  style={{color:'white'}} >立即使用</Text>
          </TouchableOpacity>
       </View>
@@ -179,15 +181,140 @@ export default class Cartoon extends React.Component {
        this.setState({
        });
      }
-
+     /**
+     生产订单
+     */
      onClick(id){
-
-       http.request();
-      //  Tools.toastShort(id,false);
-      // //  this.handleShareWeixinFriend('ss');
-      // this.payWx();
+       if(checkIndex === -1){
+         Tools.toastShort('请选择洗衣模式',false);
+         return;
+       }
+       let url='';
+       if (id === 2) {
+         url = "order";
+       } else {
+         url = "order/appointment";
+       }
+       let header={'Accept': 'application/json',
+             'Content-Type': 'application/json'};
+         if (Tools.USER) {
+           header={
+             'Accept': 'application/json',
+             'Content-Type': 'application/json',
+             'token':Tools.USER.token,
+             'userId':Tools.USER.userId
+           };
+         }
+       http.require(url+'?userId='+Tools.USER.userId+'&productId='+this.props.id + '&packageId='+checkIndex,'POST',header,null)
+       .then((data)=>{
+         if (data.code ===1000) {
+            Alert.alert(
+                 '选择支付方式',
+                 '支付金额为'+data.data.spend/100+'元',
+                 [
+                   {text: '微信', onPress: () => this.makePayOrder(1,data.data)},
+                   {text: '支付宝', onPress: () => this.makePayOrder(2,data.data)},
+                   {text: '取消订单', onPress: () => this.cancelOrder(data.data)},
+                 ]
+               );
+         }else{
+           Tools.toastShort(data.message,false);
+         }
+       });
      }
 
+     /**
+     生产支付业务订单
+     */
+     makePayOrder(id,data){
+       let header={'Accept': 'application/json','Content-Type': 'application/json'};
+       if (Tools.USER) {
+         header={
+           'Accept': 'application/json',
+           'Content-Type': 'application/json',
+           'token':Tools.USER.token,
+           'userId':Tools.USER.userId
+         };
+       }
+       if (id === 2){
+         let param = {
+           'appId':data.p_appId,
+           'orderSn':data.orderNo,
+           'subject':'星云社区洗衣消费',
+           'body':'星云社区洗衣消费',
+           'amount':data.spend+'',
+            'channel':'alipay'
+         };
+         http.paypostJson('charge/order',null,header,param)
+         .then((data)=>{
+             this.cancelOrder(data);
+             this.toPay(id,data);
+             console.warn(JSON.stringify(data));
+         });
+       }else{
+         let param = {
+           'appId':data.p_appId,
+           'orderSn':data.orderNo,
+           'subject':'星云社区洗衣消费',
+           'body':'星云社区洗衣消费',
+           'amount':data.spend+'',
+            'channel':'wx'
+         };
+         http.paypostJson('charge/order',null,header,param)
+         .then((data)=>{
+             this.payWx(data.data);
+         });
+       }
+
+     }
+
+     /**
+     调用未知支付
+     */
+async payWx(data){
+             console.warn(JSON.stringify(data));
+  let bean ={partnerId: data.partnerid, // 商家向财付通申请的商家id
+        prepayId: data.prePayId,//'1411270102', // 预支付订单
+        nonceStr: data.nonceStr, // 随机串，防重发
+        timeStamp: data.timeStamp, // 时间戳，防重发
+        package: 'Sign=WXPay', // 商家根据财付通文档填写的数据和签名
+        sign: data.paySign// 商家根据微信开放平台文档对数据做的签名
+      };
+  try {
+    WeChat.pay(bean).then((data)=>{
+      if (data.errCode===0) {
+        Tools.toastShort('支付成功',false);
+      }else{
+        Tools.toastShort('支付失败',false);
+      }
+    }).catch((error) => {
+       Tools.toastShort('支付失败',false);
+    });
+} catch (error) {
+   Tools.toastShort('支付失败',false);
+}
+}
+
+/**
+取消订单
+*/
+cancelOrder(data){
+  let url='order/cancelPay';
+  let header={};
+    if (Tools.USER) {
+      header={
+        'token':Tools.USER.token,
+        'userId':Tools.USER.userId
+      };
+    }
+  http.require(url+'?userId='+Tools.USER.userId+'&orderSn='+data.orderNo,'GET',header,null)
+  .then((data)=>{
+    if (data.code ===1000) {
+    }else{
+      Tools.toastShort(data.message,false);
+    }
+  });
+}
 
      /**
  * [分享到朋友圈]
@@ -221,23 +348,23 @@ async handleShareWeixinCircle(opt) {
 }
 
 
-async payWx(){
-  try {
-  let result = await WeChat.pay(
-    {
-      partnerId: '1411270102', // 商家向财付通申请的商家id
-      prepayId: '1411270102', // 预支付订单
-      nonceStr: '8767bccb1ff4231a9962e3914f4f1f8f', // 随机串，防重发
-      timeStamp: '1493017488', // 时间戳，防重发
-      package: 'Sign=WXPay', // 商家根据财付通文档填写的数据和签名
-      sign: '03E5DE6CF5F199EC2D2EB0D6E2C4A14D' // 商家根据微信开放平台文档对数据做的签名
-    }
-  );
-  console.warn('Pay for success!');
-} catch (error) {
-  console.warn('Pay for failure!');
-}
-}
+// async payWx(){
+//   try {
+//   let result = await WeChat.pay(
+//     {
+//       partnerId: '1411270102', // 商家向财付通申请的商家id
+//       prepayId: '1411270102', // 预支付订单
+//       nonceStr: '8767bccb1ff4231a9962e3914f4f1f8f', // 随机串，防重发
+//       timeStamp: '1493017488', // 时间戳，防重发
+//       package: 'Sign=WXPay', // 商家根据财付通文档填写的数据和签名
+//       sign: '03E5DE6CF5F199EC2D2EB0D6E2C4A14D' // 商家根据微信开放平台文档对数据做的签名
+//     }
+//   );
+//   console.warn('Pay for success!');
+// } catch (error) {
+//   console.warn('Pay for failure!');
+// }
+// }
 
 /**
  * [分享给微信好友或微信群]

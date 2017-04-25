@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  DeviceEventEmitter,
   View
 } from 'react-native';
 
@@ -22,19 +23,24 @@ export default class Us extends React.Component {
  constructor(props) {
     super(props);
     this.state={
-      header:require('../image/left_icon.png'),
+      header:1,
     }
   }
 
   render(){
+    let header = (  <Image style={{width: 80, height: 80,resizeMode:'contain',borderRadius:80}} source={require('../image/icon_header.png')} />);
+    let nickNane='请登录';
+    if (Tools.CURRINTUSER) {
+      nickNane = Tools.CURRINTUSER.nickName;
+        header = (  <Image style={{width: 80, height: 80,resizeMode:'contain',borderRadius:80}} source={{uri:Tools.CURRINTUSER.portrait}} />);
+    }
     return (
-
       <ScrollView>
       <View style={styles.contain}>
 
         <Image style={{width:Tools.ScreenSize.width, height:266}} source={require('../image/header_bg.png')}>
           <View style={styles.titleView} >
-                <Image style={{tintColor:Theme.Theme.color}} source={this.state.header} />
+          <Image style={{tintColor:Theme.Theme.color}} source={this.state.header} />
                 <Text style={{color:'#333333',fontSize: 18}}>我的</Text>
                 <TouchableOpacity onPress={this._onPressButton}>
                   <Image style={{marginRight:15,tintColor:Theme.Theme.color}}source={require('../image/nav_seach_icon.png')} />
@@ -42,11 +48,9 @@ export default class Us extends React.Component {
           </View>
           <View style={{ flex:1,flexDirection:'column',alignItems:'center',justifyContent: 'center'}} >
               <TouchableOpacity onPress={()=>this.setTabindex(99)}>
-                <Image style={{width:80, height:80,resizeMode:'contain'}} source={require('../image/icon_header.png')}  />
+                {header}
               </TouchableOpacity>
-              <Text style={{fontSize:16,color:'#333'}}>请登录
-              </Text>
-              <Text style={{fontSize:16,color:'#333'}}>
+              <Text style={{fontSize:16,marginTop:10,color:'#333'}}>{nickNane}
               </Text>
           </View>
 
@@ -181,6 +185,20 @@ export default class Us extends React.Component {
     }
 
   }
+
+  updata(data){
+    this.setState({
+    });
+  }
+
+  //注册这个监听事件
+componentDidMount(){
+     DeviceEventEmitter.addListener('login', this.updata);
+}
+//在组件销毁的时候要将其移除
+componentWillUnmount(){
+    DeviceEventEmitter.remove();
+}
 
 }
 

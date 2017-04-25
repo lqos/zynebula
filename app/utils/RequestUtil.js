@@ -16,8 +16,7 @@
  *
  */
 const HOST = 'https://dev.nebulaedu.com/api/v1/';//测试  正式https://nebulaedu.com/api/v1/
-
-export const get = (url,params)=>{
+export const require = (url,method,header,params)=>{
   if (params) {
       let paramsArray = [];
     //拼接参数
@@ -29,7 +28,7 @@ export const get = (url,params)=>{
     }
   }
   return new Promise((resolve, reject) =>{
-    fetch(HOST+url)
+    fetch(HOST+url,{method: method,headers:header})
     .then((response) =>response.json())
     .then((responseData)=>{
       resolve(responseData);
@@ -41,7 +40,7 @@ export const get = (url,params)=>{
 };
 
 
-export const post = (url,params)=>{
+export const post = (url,method,params)=>{
   if (params) {
       let paramsArray = [];
     //拼接参数
@@ -54,11 +53,7 @@ export const post = (url,params)=>{
   }
   return new Promise((resolve, reject) =>{
     fetch(HOST+url,{
-      method: 'POST',
-      headers:{
-        token:'',
-        userId:''
-      }
+      method: method,
     })
     .then((response) =>response.json())
     .then((responseData)=>{
@@ -71,7 +66,7 @@ export const post = (url,params)=>{
 };
 
 
-export const postJson = (url,params,body)=>{
+export const postJson = (url,params,header,body)=>{
   let paramsArray = [];
   if (params) {
     //拼接参数
@@ -85,11 +80,35 @@ export const postJson = (url,params,body)=>{
   return new Promise((resolve, reject) =>{
     fetch(HOST+url,{
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body:(body)
+      headers:header,
+      body:JSON.stringify(body)
+    })
+    .then((response) =>response.json())
+    .then((responseData)=>{
+      resolve(responseData);
+    }).catch((error)=>{
+      reject(error);
+    })
+    .done();
+  });
+};
+
+export const paypostJson = (url,params,header,body)=>{
+  let paramsArray = [];
+  if (params) {
+    //拼接参数
+    Object.keys(params).forEach(key => paramsArray.push(key + '=' + params[key]))
+    if (url.search(/\?/) === -1) {
+      url += '?' + paramsArray.join('&')
+    } else {
+      url += '&' + paramsArray.join('&')
+    }
+  }
+  return new Promise((resolve, reject) =>{
+    fetch('http://pay2.enetic.cn/api/v1/'+url,{
+      method: 'POST',
+      headers:header,
+      body:JSON.stringify(body)
     })
     .then((response) =>response.json())
     .then((responseData)=>{

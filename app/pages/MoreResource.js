@@ -6,7 +6,9 @@ var Tools = require('../utils/Tools');
 var Theme = require('../utils/Theme');
 import Cartoon from '../ui/Cartoon';
 import Storage from '../utils/Storage';
+import * as http from '../utils/RequestUtil';
 import TitleView from '../commodules/Maintitle';
+import LogUi from '../ui/LogIn' ;
 var page=1 ;
 
 export default class MoreResource extends React.Component {
@@ -23,16 +25,26 @@ export default class MoreResource extends React.Component {
     if (this.props.dto) {
       urt='&parentId='+this.props.dto.id;
     }
-    var url = Tools.URL.BASE_URL+'product/listByFloorCard?longitude='+longitude+'&latitude='+latitude+'&page='+1+'&size='+(20*page)+'&userId='+Tools.URL.USER.id+urt;
-    let response = await fetch(url);
-    let responseJson = await response.json();
-    console.warn(responseJson.code);
-    if (responseJson.code===1000) {
-      this.setState({
-        isRefreshing:false,
-        FloorCardData: responseJson.data,
-      })
-    }
+
+    let header={};
+      if (Tools.USER) {
+        header={
+          'token':Tools.USER.token,
+          'userId':Tools.USER.userId
+        };
+        urt=urt+'&userId='+Tools.USER.userId;
+      }
+
+    var url =  'product/listByFloorCard?longitude='+longitude+'&latitude='+latitude+'&page='+1+'&size='+(20*page)+urt;
+
+    http.require(url,'GET',header,null).then((responseJson)=>{
+      if (responseJson.code===1000) {
+        this.setState({
+          isRefreshing:false,
+          FloorCardData: responseJson.data,
+        })
+      }
+    });
   }
   getStatus(data){
 
@@ -82,14 +94,21 @@ export default class MoreResource extends React.Component {
       // TODO  如果未登录则跳转登录界面
       // TODO  如果是预约状态或者是使用状态则跳转订单详情页 （是自己使用或者预约）
       const { navigator } = this.props;
-            navigator.push({
-              name: 'Cartoon',
-              component:Cartoon,
-              params: {
-                dto:data,
-                id:data.id
-              }
-            });
+  if (Tools.USER) {
+    navigator.push({
+      name: 'Cartoon',
+      component:Cartoon,
+      params: {
+        dto:data,
+        id:data.id
+      }
+    });
+  }else{
+    navigator.push({
+          title: 'LogUi',
+          component: LogUi,
+    });
+  }
     }
 
   render(){

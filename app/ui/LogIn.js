@@ -9,6 +9,7 @@ import {
   Text,
   TextInput,
   Image,
+  DeviceEventEmitter,
   StyleSheet
 } from 'react-native';
 var Theme = require('../utils/Theme');
@@ -16,8 +17,8 @@ var Tools = require('../utils/Tools');
 import Storage from '../utils/Storage';
 import TitleView from '../commodules/Maintitle';
 import * as http from '../utils/RequestUtil';
-var mobile ;
-var password;
+var mobile ='18232077504';
+var password = '111111';
 
 export default class LogIn extends React.Component {
 
@@ -64,17 +65,18 @@ export default class LogIn extends React.Component {
      }
 
     onClick(type){
-      Storage.delete('userId');
-      Storage.delete('token');
-      let formData = JSON.stringify({ //参数
-                'password': password,
-                'accountName': mobile,
-            });
-      http.postJson('user/login',null,formData).then((data)=>{
+      Storage.delete('userIdwithtoken');
+
+      let formData = {
+        'password': password,
+        'accountName': mobile
+      };
+      http.postJson('user/login',null,{'Accept': 'application/json',
+            'Content-Type': 'application/json'},formData).then((data)=>{
         Tools.toastShort(data.message,false);
         if (data.code === 1000) {
-          Storage.save('userId',data.userId);
-          Storage.save('token',data.token);
+          Tools.USER=data;
+          Storage.save('userIdwithtoken',data);
           this.getUserInfo();
         }
       }).catch((error)=>{
@@ -113,13 +115,19 @@ export default class LogIn extends React.Component {
     }
 
     getUserInfo(){
-      Storage.get('userId').then((data) => {
-        http.get('user/profile',{'userId':data}).then((data) => {
-          Tools.toastShort(data.message,false);
-        })
-      });
-
-
+      let header={};
+        if (Tools.USER) {
+          header={
+            'token':Tools.USER.token,
+            'userId':Tools.USER.userId
+          };
+        }
+        http.require('user/profile','GET',header,{'userId':Tools.USER.userId}).then((data) => {
+          Tools.CURRINTUSER=data.data;
+          DeviceEventEmitter.emit('login',data.data)
+          const { navigator } = this.props;
+          navigator.pop();
+        });
     }
 }
 

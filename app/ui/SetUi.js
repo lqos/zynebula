@@ -8,8 +8,11 @@ import {
   TouchableOpacity,
   Text,
   Image,
+  Alert,
   StyleSheet
 } from 'react-native';
+
+import * as WeChat from 'react-native-wechat';
 var Theme = require('../utils/Theme');
 var Tools = require('../utils/Tools');
 var id ;
@@ -116,11 +119,11 @@ export default class SetUi extends React.Component {
 
              <View style={styles.line}/>
 
-             <TouchableOpacity onPress={()=>this.setTabindex(7)}>
+             <TouchableOpacity onPress={()=>this.share()}>
                <View style={styles.lineStyle}>
                  <Image source={require('../image/us_set.png')}/>
                  <Text style={styles.line_text}>
-                   设置
+                   推广应用
                  </Text>
                  <Image source={require('../image/icon_enter.png')}/>
                </View>
@@ -132,7 +135,82 @@ export default class SetUi extends React.Component {
 
      setTabindex(v){
 
+
      }
+     share(){
+       Alert.alert(
+            '',
+            '分享给朋友',
+            [
+              {text: '朋友圈', onPress: () => this.handleShareWeixinCircle()},
+              {text: '微信好友', onPress: () => this.handleShareWeixinFriend()},
+              {text: '取消'},
+            ],
+            { cancelable: false }
+          );
+     }
+
+     /**
+ * [分享到朋友圈]
+ * @param  {[Object]} opt 入参对象
+ * @example { thumbImage:'', title: '', webpageUrl: '' }
+ */
+async handleShareWeixinCircle(opt) {
+   /* 异步操作锁 */
+ var result = await  WeChat.isWXAppInstalled()
+                     .then((isInstalled) => {
+                       if (isInstalled) {
+                         WeChat.shareToTimeline({
+                           title:'微信朋友圈测试链接',
+                           description: '分享自:江清清的技术专栏(www.lcode.org)',
+                           thumbImage: 'http://mta.zttit.com:8080/images/ZTT_1404756641470_image.jpg',
+                           type: 'news',
+                           webpageUrl: 'http://www.lcode.org'
+                         }).then((data)=>{
+                           if (data.errCode===0) {
+                               Tools.toastShort('分享成功',false);
+                           }
+                           console.warn(JSON.stringify(data));
+                         })
+                         .catch((error) => {
+                            Tools.toastShort(error.message,false);
+                         });
+                       } else {
+                         Tools.toastShort('没有安装微信软件，请您安装微信之后再试',false);
+                       }
+                     });
+}
+
+/**
+ * [分享给微信好友或微信群]
+ * @param  {[Object]} opt 入参对象
+ * @example { thumbImage:'', title: '', webpageUrl: '' }
+ */
+async handleShareWeixinFriend(opt) {
+ /* 异步操作锁 */
+ var result =  WeChat.isWXAppInstalled()
+                    .then((isInstalled) => {
+                      if (isInstalled) {
+                        WeChat.shareToSession({
+                          title:'微信好友测试链接',
+                          description: '分享自:江清清的技术专栏(www.lcode.org)',
+                          thumbImage: 'http://mta.zttit.com:8080/images/ZTT_1404756641470_image.jpg',
+                          type: 'news',
+                          webpageUrl: 'http://www.lcode.org'
+                        }).then((data)=>{
+                          if (data.errCode===0) {
+                              Tools.toastShort('分享成功',false);
+                          }
+                          console.warn(JSON.stringify(data));
+                        }).catch((error) => {
+                           Tools.toastShort(error.message,false);
+                        });
+                      } else {
+                        Tools.toastShort('没有安装微信软件，请您安装微信之后再试',false);
+                      }
+                    });
+}
+
 
 
 

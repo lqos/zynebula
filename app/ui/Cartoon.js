@@ -20,6 +20,7 @@ var id ;
 import AlterA from '../commodules/AlterA';
 import TitleView from '../commodules/Maintitle';
 var checkIndex = -1;
+var modeData;
 import * as WeChat from 'react-native-wechat';
 
 export default class Cartoon extends React.Component {
@@ -37,7 +38,7 @@ export default class Cartoon extends React.Component {
    **/
    async getFloorCard(id){
      var url = 'product/package?productId='+id;
-
+     checkIndex=-1;
      http.require(url,'GET',null).then((responseJson)=>{
        if (responseJson.code===1000) {
         console.warn(JSON.stringify(responseJson));
@@ -128,10 +129,9 @@ export default class Cartoon extends React.Component {
 
              <ListView
                margin={25}
-
-        dataSource={this.state.packageData}
-        renderRow={(data) => this.getPackageView(data)}
-      />
+               dataSource={this.state.packageData}
+               renderRow={(data) => this.getPackageView(data)}
+               />
 
 
       <View style={{flex:1,alignItems:'center', justifyContent: 'center', justifyContent: 'center' }} activeOpacity={0.8}>
@@ -150,7 +150,7 @@ export default class Cartoon extends React.Component {
 
      getPackageView(data){
        if (checkIndex===-1) {
-         checkIndex = data.id;
+        checkIndex = (data.id);
        }
        var check = require('../image/nocheck_de.png');
        if (data.id === checkIndex) {
@@ -174,10 +174,7 @@ export default class Cartoon extends React.Component {
      }
 
      onselect(id){
-       if(checkIndex === id){
-         return;
-       }
-       checkIndex =id;
+       checkIndex=id;
        this.setState({
        });
      }
@@ -215,7 +212,8 @@ export default class Cartoon extends React.Component {
                    {text: '微信', onPress: () => this.makePayOrder(1,data.data)},
                    {text: '支付宝', onPress: () => this.makePayOrder(2,data.data)},
                    {text: '取消订单', onPress: () => this.cancelOrder(data.data)},
-                 ]
+                 ],
+                 { cancelable: false }
                );
          }else{
            Tools.toastShort(data.message,false);
@@ -316,85 +314,6 @@ cancelOrder(data){
   });
 }
 
-     /**
- * [分享到朋友圈]
- * @param  {[Object]} opt 入参对象
- * @example { thumbImage:'', title: '', webpageUrl: '' }
- */
-async handleShareWeixinCircle(opt) {
-   /* 异步操作锁 */
- var result = await  WeChat.isWXAppInstalled()
-                     .then((isInstalled) => {
-                       if (isInstalled) {
-                         WeChat.shareToTimeline({
-                           title:'微信朋友圈测试链接',
-                           description: '分享自:江清清的技术专栏(www.lcode.org)',
-                           thumbImage: 'http://mta.zttit.com:8080/images/ZTT_1404756641470_image.jpg',
-                           type: 'news',
-                           webpageUrl: 'http://www.lcode.org'
-                         }).then((data)=>{
-                           if (data.errCode===0) {
-                               Tools.toastShort('分享成功',false);
-                           }
-                           console.warn(JSON.stringify(data));
-                         })
-                         .catch((error) => {
-                            Tools.toastShort(error.message,false);
-                         });
-                       } else {
-                         Tools.toastShort('没有安装微信软件，请您安装微信之后再试',false);
-                       }
-                     });
-}
-
-
-// async payWx(){
-//   try {
-//   let result = await WeChat.pay(
-//     {
-//       partnerId: '1411270102', // 商家向财付通申请的商家id
-//       prepayId: '1411270102', // 预支付订单
-//       nonceStr: '8767bccb1ff4231a9962e3914f4f1f8f', // 随机串，防重发
-//       timeStamp: '1493017488', // 时间戳，防重发
-//       package: 'Sign=WXPay', // 商家根据财付通文档填写的数据和签名
-//       sign: '03E5DE6CF5F199EC2D2EB0D6E2C4A14D' // 商家根据微信开放平台文档对数据做的签名
-//     }
-//   );
-//   console.warn('Pay for success!');
-// } catch (error) {
-//   console.warn('Pay for failure!');
-// }
-// }
-
-/**
- * [分享给微信好友或微信群]
- * @param  {[Object]} opt 入参对象
- * @example { thumbImage:'', title: '', webpageUrl: '' }
- */
-async handleShareWeixinFriend(opt) {
- /* 异步操作锁 */
- var result =  WeChat.isWXAppInstalled()
-                    .then((isInstalled) => {
-                      if (isInstalled) {
-                        WeChat.shareToSession({
-                          title:'微信好友测试链接',
-                          description: '分享自:江清清的技术专栏(www.lcode.org)',
-                          thumbImage: 'http://mta.zttit.com:8080/images/ZTT_1404756641470_image.jpg',
-                          type: 'news',
-                          webpageUrl: 'http://www.lcode.org'
-                        }).then((data)=>{
-                          if (data.errCode===0) {
-                              Tools.toastShort('分享成功',false);
-                          }
-                          console.warn(JSON.stringify(data));
-                        }).catch((error) => {
-                           Tools.toastShort(error.message,false);
-                        });
-                      } else {
-                        Tools.toastShort('没有安装微信软件，请您安装微信之后再试',false);
-                      }
-                    });
-}
 
      componentWillMount() {
         if (Platform.OS === 'android') {
@@ -420,15 +339,16 @@ async handleShareWeixinFriend(opt) {
     componentDidMount() {
       if (this.props.dto.onOffStatus == 0 || this.props.dto.washStatus != 2){
         Alert.alert(
-             '',
+             '提示',
              '洗衣机当前为'+this.getStatus(this.props.dto)+'状态，请选择其他空闲设备！',
              [
                {text: 'OK', onPress: () => this.onBackAndroid()},
-             ]
+             ],
+            { cancelable: false }
            );
+      }else{
+        this.getFloorCard(this.props.id);
       }
-
-      this.getFloorCard(this.props.id);
     }
 }
 

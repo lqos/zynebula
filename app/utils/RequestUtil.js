@@ -15,10 +15,11 @@
  * limitations under the License.
  *
  */
+import Tools from './Tools';
 const HOST = 'https://dev.nebulaedu.com/api/v1/';//测试  正式https://nebulaedu.com/api/v1/
-export const require = (url,method,header,params)=>{
+export const require = (url, method, header, params) => {
   if (params) {
-      let paramsArray = [];
+    let paramsArray = [];
     //拼接参数
     Object.keys(params).forEach(key => paramsArray.push(key + '=' + params[key]))
     if (url.search(/\?/) === -1) {
@@ -27,22 +28,22 @@ export const require = (url,method,header,params)=>{
       url += '&' + paramsArray.join('&')
     }
   }
-  return new Promise((resolve, reject) =>{
-    fetch(HOST+url,{method: method,headers:header})
-    .then((response) =>response.json())
-    .then((responseData)=>{
-      resolve(responseData);
-    }).catch((error)=>{
-      reject(error);
-    })
-    .done();
+  return new Promise((resolve, reject) => {
+    fetch(HOST + url, { method: method, headers: header })
+      .then((response) => response.json())
+      .then((responseData) => {
+        resolve(responseData);
+      }).catch((error) => {
+        reject(error);
+      })
+      .done();
   });
 };
 
 
-export const post = (url,method,params)=>{
+export const post = (url, method, params) => {
   if (params) {
-      let paramsArray = [];
+    let paramsArray = [];
     //拼接参数
     Object.keys(params).forEach(key => paramsArray.push(key + '=' + params[key]))
     if (url.search(/\?/) === -1) {
@@ -51,22 +52,22 @@ export const post = (url,method,params)=>{
       url += '&' + paramsArray.join('&')
     }
   }
-  return new Promise((resolve, reject) =>{
-    fetch(HOST+url,{
+  return new Promise((resolve, reject) => {
+    fetch(HOST + url, {
       method: method,
     })
-    .then((response) =>response.json())
-    .then((responseData)=>{
-      resolve(responseData);
-    }).catch((error)=>{
-      reject(error);
-    })
-    .done();
+      .then((response) => response.json())
+      .then((responseData) => {
+        resolve(responseData);
+      }).catch((error) => {
+        reject(error);
+      })
+      .done();
   });
 };
 
 
-export const postJson = (url,params,header,body)=>{
+export const postJson = (url, params, header, body) => {
   let paramsArray = [];
   if (params) {
     //拼接参数
@@ -77,23 +78,23 @@ export const postJson = (url,params,header,body)=>{
       url += '&' + paramsArray.join('&')
     }
   }
-  return new Promise((resolve, reject) =>{
-    fetch(HOST+url,{
+  return new Promise((resolve, reject) => {
+    fetch(HOST + url, {
       method: 'POST',
-      headers:header,
-      body:JSON.stringify(body)
+      headers: header,
+      body: JSON.stringify(body)
     })
-    .then((response) =>response.json())
-    .then((responseData)=>{
-      resolve(responseData);
-    }).catch((error)=>{
-      reject(error);
-    })
-    .done();
+      .then((response) => response.json())
+      .then((responseData) => {
+        resolve(responseData);
+      }).catch((error) => {
+        reject(error);
+      })
+      .done();
   });
 };
 
-export const paypostJson = (url,params,header,body)=>{
+export const paypostJson = (url, params, header, body) => {
   let paramsArray = [];
   if (params) {
     //拼接参数
@@ -104,18 +105,42 @@ export const paypostJson = (url,params,header,body)=>{
       url += '&' + paramsArray.join('&')
     }
   }
-  return new Promise((resolve, reject) =>{
-    fetch('http://pay2.enetic.cn/api/v1/'+url,{
+  return new Promise((resolve, reject) => {
+    fetch('http://pay2.enetic.cn/api/v1/' + url, {
       method: 'POST',
-      headers:header,
-      body:JSON.stringify(body)
+      headers: header,
+      body: JSON.stringify(body)
     })
-    .then((response) =>response.json())
-    .then((responseData)=>{
-      resolve(responseData);
-    }).catch((error)=>{
-      reject(error);
-    })
-    .done();
+      .then((response) => response.json())
+      .then((responseData) => {
+        resolve(responseData);
+      }).catch((error) => {
+        reject(error);
+      })
+      .done();
+  });
+};
+
+
+export const exerequire = (url, method, params) => {
+  if (params) {
+    let paramsArray = [];
+    //拼接参数
+    Object.keys(params).forEach(key => paramsArray.push(key + '=' + params[key]))
+    if (url.search(/\?/) === -1) {
+      url += '?' + paramsArray.join('&')
+    } else {
+      url += '&' + paramsArray.join('&')
+    }
+  }
+  return new Promise((resolve, reject) => {
+    fetch(HOST + url, { method: method, headers: header })
+      .then((response) => response.json())
+      .then((responseData) => {
+        resolve(responseData);
+      }).catch((error) => {
+        reject(error);
+      })
+      .done();
   });
 };

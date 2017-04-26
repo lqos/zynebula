@@ -4,11 +4,9 @@ import {
   AppRegistry,
   StyleSheet,
   Navigator,
-      Image,
-      View,
-      Dimensions,
-
-
+  Image,
+  View,
+  Dimensions,
 } from 'react-native';
 
 import Splash from './pages/Splash';
@@ -18,21 +16,21 @@ const ScreenHeight = Dimensions.get('window').height;
 
 export default class root extends React.Component {
 
-render() {
+  render() {
 
     let defaultName = 'Splash';
     let defaultComponent = Splash;
 
     return (
       <Navigator
-            initialRoute={{ name: defaultName, component: defaultComponent }}
-            configureScene={(route) => {
-            return Navigator.SceneConfigs.FloatFromRight;
+        initialRoute={{ name: defaultName, component: defaultComponent }}
+        configureScene={(route) => {
+          return Navigator.SceneConfigs.FloatFromRight;
         }}
         renderScene={(route, navigator) => {
-            let Component = route.component;
-            return <Component {...route.params} navigator={navigator} />
-      }}></Navigator>
+          let Component = route.component;
+          return <Component {...route.params} navigator={navigator} />
+        }}></Navigator>
     );
   }
 

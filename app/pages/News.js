@@ -8,12 +8,12 @@ import Storage from '../utils/Storage';
 var Tools = require('../utils/Tools');
 export default class News extends React.Component {
 
- constructor(props) {
+  constructor(props) {
     super(props);
- 
+
   }
 
-  render(){
+  render() {
     return (<Text>wode News</Text>);
   }
 

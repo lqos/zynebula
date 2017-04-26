@@ -1,4 +1,3 @@
-export const Theme={
-    color:'#2275fe',
-
+export const Theme = {
+    color: '#2275fe',
 }

@@ -4,7 +4,6 @@ import {
   View,
   BackAndroid,
   Platform,
-  Navigator,
   TouchableOpacity,
   Text,
   Image,
@@ -12,6 +11,7 @@ import {
   StyleSheet
 } from 'react-native';
 
+import { Navigator } from 'react-native-deprecated-custom-components'
 import * as WeChat from 'react-native-wechat';
 var Theme = require('../utils/Theme');
 var Tools = require('../utils/Tools');

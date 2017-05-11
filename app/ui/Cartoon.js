@@ -4,7 +4,6 @@ import {
   View,
   BackAndroid,
   Platform,
-  Navigator,
   ListView,
   TouchableOpacity,
   Text,
@@ -12,6 +11,7 @@ import {
   Image,
   StyleSheet
 } from 'react-native';
+import { Navigator } from 'react-native-deprecated-custom-components'
 var Theme = require('../utils/Theme');
 var Tools = require('../utils/Tools');
 import Storage from '../utils/Storage';

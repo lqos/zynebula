@@ -7,6 +7,7 @@ import {
   StatusBar,
 } from 'react-native';
 
+import { Navigator } from 'react-native-deprecated-custom-components'
 import TabNavigator from 'react-native-tab-navigator';
 
 import Index from '../pages/Index';

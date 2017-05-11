@@ -9,6 +9,7 @@ import {
   View
 } from 'react-native';
 
+import { Navigator } from 'react-native-deprecated-custom-components'
 var Tools = require('../utils/Tools');
 var Theme = require('../utils/Theme');
 var ImagePicker = require('react-native-image-picker');

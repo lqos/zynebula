@@ -3,12 +3,12 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   StyleSheet,
-  Navigator,
   Image,
   View,
   Dimensions,
 } from 'react-native';
 
+import { Navigator } from 'react-native-deprecated-custom-components'
 import Splash from './pages/Splash';
 /**获取屏幕尺寸 */
 const ScreenWidth = Dimensions.get('window').width;

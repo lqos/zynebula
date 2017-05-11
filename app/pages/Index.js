@@ -16,7 +16,7 @@ import {
   Geolocation
 } from 'react-native-baidu-map';
 
-
+import { Navigator } from 'react-native-deprecated-custom-components'
 var Tools = require('../utils/Tools');
 var Theme = require('../utils/Theme');
 import Swiper from 'react-native-swiper';

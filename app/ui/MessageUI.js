@@ -4,7 +4,6 @@ import {
   View,
   BackAndroid,
   Platform,
-  Navigator,
   TouchableOpacity,
   Text,
   Image,
@@ -13,7 +12,7 @@ import {
 var Theme = require('../utils/Theme');
 var Tools = require('../utils/Tools');
 var id;
-
+import { Navigator } from 'react-native-deprecated-custom-components'
 export default class MessageUI extends React.Component {
 
   constructor(props) {

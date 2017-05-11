@@ -8,6 +8,7 @@ import {
   Platform
 } from 'react-native';
 
+import { Navigator } from 'react-native-deprecated-custom-components'
 import * as http from '../utils/RequestUtil';
 import ScrollableTabView, { DefaultTabBar } from 'react-native-scrollable-tab-view';
 var Tools = require('../utils/Tools');

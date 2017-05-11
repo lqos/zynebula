@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import {
   Text,
-  navigator,
   StatusBar,
   Image
 } from 'react-native';
 
+import { Navigator } from 'react-native-deprecated-custom-components'
 import Home from '../home/Home';
 var Tools = require('../utils/Tools');
 import * as http from '../utils/RequestUtil';

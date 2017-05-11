@@ -6,9 +6,23 @@ import {
   Image,
   StatusBar,
 } from 'react-native';
+import { StackNavigator, TabNavigator, TabBarBottom } from 'react-navigation';
+import TabBarItem from '../widget/TabBarItem';
+import WebScene from '../widget/WebScene'
 
-import { Navigator } from 'react-native-deprecated-custom-components'
-import TabNavigator from 'react-native-tab-navigator';
+const lightContentScenes = ['Home', 'Mine']
+
+function getCurrentRouteName(navigationState) {
+  if (!navigationState) {
+    return null;
+  }
+  const route = navigationState.routes[navigationState.index];
+  // dive into nested navigators
+  if (route.routes) {
+    return getCurrentRouteName(route);
+  }
+  return route.routeName;
+}
 
 import Index from '../pages/Index';
 import Type from '../pages/Type';
@@ -36,7 +50,7 @@ const PERSONAL = '我的';
 const PERSONAL_NORMAL = require('../image/nav_tab_us_icon.png');
 const PERSONAL_FOCUS = require('../image/nav_tab_us_icon.png');
 
-var navigator;
+// var navigator;
 
 import TitleView from '../commodules/Maintitle';
 
@@ -44,64 +58,122 @@ export default class Home extends React.Component {
 
   constructor(props) {
     super(props);
-    navigator = this.props;
-    this.state = {
-      title: '首页',
-      selectedTab: HOME,
-    };
+    StatusBar.setBarStyle('light-content')
+    // navigator = this.props;
+
   }
 
   render() {
     return (
-      <View style={styles.contain}>
-        <TabNavigator hidesTabTouch={true} tabBarStyle={styles.tab}>
-          {this._renderTabItem(HOME_NORMAL, HOME_FOCUS, HOME, Home._createChildView(HOME, 0))}
-          {this._renderTabItem(CATEGORY_NORMAL, CATEGORY_FOCUS, CATEGORY, Home._createChildView(CATEGORY, 1))}
-          {this._renderTabItem(CART_NORMAL, CART_FOCUS, CART, Home._createChildView(CART, 2))}
-          {this._renderTabItem(PERSONAL_NORMAL, PERSONAL_FOCUS, PERSONAL, Home._createChildView(PERSONAL, 3))}
-        </TabNavigator>
-      </View>
-    );
-  }
-
-  _renderTabItem(img, selectedImg, tag, childView) {
-    return (
-      <TabNavigator.Item
-        title={tag}
-        selected={this.state.selectedTab === tag}
-        titleStyle={{ fontSize: 13 }}
-        selectedTitleStyle={{ fontSize: 14, color: Theme.Theme.color }}
-        renderIcon={() => <Image style={styles.tabIconNormal} source={img} />}
-        renderSelectedIcon={() => <Image style={styles.tabIcon} source={selectedImg} />}
-        onPress={() => this.setState({ selectedTab: tag })}>
-        {childView}
-      </TabNavigator.Item>
-    );
-  }
-  static _createChildView(tag, index) {
-
-    var contains;
-    var title = (<TitleView title={tag} titleColor='#ffffff' />);
-    switch (index) {
-      case 0: contains = <Index {...navigator} />;
-        break;
-      case 1: contains = <Type {...navigator} />;
-        break;
-      case 2: contains = <News {...navigator} />;
-        break;
-      case 3: contains = <Us {...navigator} />;
-        title = null;
-        break;
-
-    }
-    return (
-      <View style={{ marginTop: 0.31, backgroundColor: '#ffffff', flex: 1 }}>
-        {title}
-        {contains}
-      </View>
+      <Navigator
+        onNavigationStateChange={
+          (prevState, currentState) => {
+            const currentScene = getCurrentRouteName(currentState);
+            const previousScene = getCurrentRouteName(prevState);
+            if (previousScene !== currentScene) {
+              if (lightContentScenes.indexOf(currentScene) >= 0) {
+                StatusBar.setBarStyle('light-content')
+              } else {
+                StatusBar.setBarStyle('dark-content')
+              }
+            }
+          }
+        }
+      />
     );
   }
 }
+const Tab = TabNavigator(
+  {
+    Index: {
+      screen: Index,
+      navigationOptions: ({ navigation }) => ({
+        tabBarLabel: '洗衣',
+        tabBarIcon: ({ focused, tintColor }) => (
+          <TabBarItem
+            tintColor={tintColor}
+            focused={focused}
+            normalImage={require('../image/nav_tab_home_icon.png')}
+            selectedImage={require('../image/nav_tab_home_icon.png')}
+          />
+        )
+      }),
+    },
+    Type: {
+      screen: Type,
+      navigationOptions: ({ navigation }) => ({
+        tabBarLabel: '话图',
+        tabBarIcon: ({ focused, tintColor }) => (
+          <TabBarItem
+            tintColor={tintColor}
+            focused={focused}
+            normalImage={require('../image/nav_tab_type_icon.png')}
+            selectedImage={require('../image/nav_tab_type_icon.png')}
+          />
+        )
+      }),
+    },
+
+    News: {
+      screen: News,
+      navigationOptions: ({ navigation }) => ({
+        tabBarLabel: '订单',
+        tabBarIcon: ({ focused, tintColor }) => (
+          <TabBarItem
+            tintColor={tintColor}
+            focused={focused}
+            normalImage={require('../image/nav_tab_new_icon.png')}
+            selectedImage={require('../image/nav_tab_new_icon.png')}
+          />
+        )
+      }),
+    },
+
+    Us: {
+      screen: Us,
+      navigationOptions: ({ navigation }) => ({
+        tabBarLabel: '我的',
+        tabBarIcon: ({ focused, tintColor }) => (
+          <TabBarItem
+            tintColor={tintColor}
+            focused={focused}
+            normalImage={require('../image/nav_tab_us_icon.png')}
+            selectedImage={require('../image/nav_tab_us_icon.png')}
+          />
+        )
+      }),
+    },
+  },
+  {
+    tabBarComponent: TabBarBottom,
+    tabBarPosition: 'bottom',
+    swipeEnabled: true,
+    animationEnabled: true,
+    lazy: true,
+    tabBarOptions: {
+      activeTintColor: Theme.Theme.color,
+      inactiveTintColor: '#979797',
+      style: { backgroundColor: '#ffffff' },
+    },
+  }
+
+);
+
+const Navigator = StackNavigator(
+  {
+    Tab: { screen: Tab },
+    Web: { screen: WebScene },
+    // GroupPurchase: { screen: GroupPurchaseScene },
+  },
+  {
+    navigationOptions: {
+      // headerStyle: { backgroundColor: color.theme }
+      headerBackTitle: null,
+      headerTintColor: '#333333',
+      showIcon: true,
+    },
+  }
+);
 
 const styles = StyleSheet.create({
 

@@ -16,7 +16,6 @@ import {
   Geolocation
 } from 'react-native-baidu-map';
 
-import { Navigator } from 'react-native-deprecated-custom-components'
 var Tools = require('../utils/Tools');
 var Theme = require('../utils/Theme');
 import Swiper from 'react-native-swiper';
@@ -27,7 +26,16 @@ import * as http from '../utils/RequestUtil';
 import LogUi from '../ui/LogIn';
 var page = 1;
 export default class Index extends React.Component {
+  static navigationOptions = ({ navigation }) => ({
+    headerTitle: (
+      <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 
+        <Text style={{ color: 'white', fontSize: 18,marginLeft:10 }}>首页</Text>
+
+      </TouchableOpacity>
+    ),
+    headerStyle: { backgroundColor: Theme.Theme.color },
+  })
   constructor(props) {
     super(props);
     this.state = {
@@ -89,11 +97,11 @@ export default class Index extends React.Component {
       };
       urt = urt + '?userId=' + Tools.USER.userId;
     }
-    console.warn(urt);
+    // console.warn(urt);
     let params = { 'latitude': latitude, longitude: longitude, 'parentId': id };
     http.require('product/recommend' + urt, 'GET', header, params).then((responseJson) => {
       let name = '为您推荐';
-      console.warn(JSON.stringify(responseJson));
+      // console.warn(JSON.stringify(responseJson));
       if (responseJson.code === 1000) {
         name = '为您推荐';
       } else if (responseJson.code === 2000) {
@@ -155,7 +163,11 @@ export default class Index extends React.Component {
     this.getBanner();
 
     Storage.get('Geolocation').then(data => {
-      this.getSchoolName(data.latitude, data.longitude);
+      if (data) {
+        this.getSchoolName(data.latitude, data.longitude);
+      } else
+        this.getSchoolName(0, 0);
+
     });
   }
 
@@ -197,22 +209,22 @@ export default class Index extends React.Component {
   }
 
   LookDetail(data) {
-    const { navigator } = this.props;
-    if (Tools.USER) {
-      navigator.push({
-        name: 'Cartoon',
-        component: Cartoon,
-        params: {
-          dto: data,
-          id: data.id
-        }
-      });
-    } else {
-      navigator.push({
-        title: 'LogUi',
-        component: LogUi,
-      });
-    }
+    // const { navigator } = this.props;
+    // if (Tools.USER) {
+    //   navigator.push({
+    //     name: 'Cartoon',
+    //     component: Cartoon,
+    //     params: {
+    //       dto: data,
+    //       id: data.id
+    //     }
+    //   });
+    // } else {
+    //   navigator.push({
+    //     title: 'LogUi',
+    //     component: LogUi,
+    //   });
+    // }
     // TODO  如果未登录则跳转登录界面
     // TODO  如果是预约状态或者是使用状态则跳转订单详情页 （是自己使用或者预约）
 

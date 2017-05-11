@@ -15,6 +15,18 @@ var Tools = require('../utils/Tools');
 var Theme = require('../utils/Theme');
 
 export default class Type extends React.Component {
+
+    static navigationOptions = ({ navigation }) => ({
+    headerTitle: (
+      <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+
+        <Text style={{ color: 'white', fontSize: 18,marginLeft:10 }}>Type</Text>
+
+      </TouchableOpacity>
+    ),
+    headerStyle: { backgroundColor: Theme.Theme.color },
+  })
+
   constructor(props) {
     super(props);
     this.state = {
@@ -32,7 +44,7 @@ export default class Type extends React.Component {
       };
     }
     http.require('order/category', 'GET', header, null).then((data) => {
-      console.warn(JSON.stringify(data));
+      // console.warn(JSON.stringify(data));
       this.setState({
         titleData: data.data,
       })
@@ -58,8 +70,8 @@ export default class Type extends React.Component {
         >
 
           {
-            this.state.titleData.map((data) => {
-              return (<Text tabLabel={data.name}>{data.name}</Text>);
+            this.state.titleData.map((data,i) => {
+              return (<Text key={i} tabLabel={data.name}>{data.name}</Text>);
             })
 
           }

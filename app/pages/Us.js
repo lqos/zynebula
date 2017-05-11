@@ -21,6 +21,17 @@ import LogUi from '../ui/LogIn';
 
 export default class Us extends React.Component {
 
+   static navigationOptions = ({ navigation }) => ({
+    headerTitle: (
+      <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+
+        <Text style={{ color: 'white', fontSize: 18,marginLeft:10 }}>US</Text>
+
+      </TouchableOpacity>
+    ),
+    headerStyle: { backgroundColor: Theme.Theme.color },
+  })
+
   constructor(props) {
     super(props);
     this.state = {

@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React  from 'react';
 import {
-  TouchableHighlight, ListView, Image, Text, Platform, BackAndroid, View, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView,
+ Image, Text, Platform, BackHandler, View, StyleSheet, TouchableOpacity, ScrollView,
   RefreshControl,
 } from 'react-native';
 
@@ -9,23 +9,39 @@ var Theme = require('../utils/Theme');
 import Cartoon from '../ui/Cartoon';
 import Storage from '../utils/Storage';
 import * as http from '../utils/RequestUtil';
-import TitleView from '../commodules/Maintitle';
 import LogUi from '../ui/LogIn';
 var page = 1;
 
 export default class MoreResource extends React.Component {
+    state: {
+        data: Object,
+    }
 
-  constructor(props) {
+    static navigationOptions = ({navigation}) => ({
+        title: 'homeThree',
+        header: (navigation, defaultHeader) => ({
+            visible: true  // 覆盖预设中的此项
+        }),
+        cardStack: {
+            gesturesEnabled: false  // 是否可以右滑返回
+        }
+    })
+
+
+
+    constructor(props) {
     super(props);
+
     this.state = {
       FloorCardData: null
     };
   }
 
   async getListData(latitude, longitude) {
+      let info = this.props.navigation.state.params.data;
     var urt = '';
-    if (this.props.dto) {
-      urt = '&parentId=' + this.props.dto.id;
+    if (info) {
+      urt = '&parentId=' + info.id;
     }
 
     let header = {};
@@ -40,6 +56,7 @@ export default class MoreResource extends React.Component {
     var url = 'product/listByFloorCard?longitude=' + longitude + '&latitude=' + latitude + '&page=' + 1 + '&size=' + (20 * page) + urt;
 
     http.require(url, 'GET', header, null).then((responseJson) => {
+      console.warn(JSON.stringify(responseJson))
       if (responseJson.code === 1000) {
         this.setState({
           isRefreshing: false,
@@ -88,7 +105,9 @@ export default class MoreResource extends React.Component {
   _onRefresh() {
     page = 1;
     Storage.get('Geolocation').then(data => {
+      if(data)
       this.getListData(data.latitude, data.longitude);
+      else  this.getListData(0, 0);
     });
   }
 
@@ -114,6 +133,7 @@ export default class MoreResource extends React.Component {
   }
 
   render() {
+      let info = this.props.navigation.state.params.data;
 
     var recommend;
     if (this.state.FloorCardData) {
@@ -144,18 +164,14 @@ export default class MoreResource extends React.Component {
     }
     return (
       <View style={styles.container}>
-        <TitleView
-          ClickLeft={() => { this.onBackAndroid() }}
-          leftIcon={<Image tintColor={'#ffffff'} source={require('../image/nav_finish.png')} />}
-        />
 
         <View style={{ backgroundColor: Theme.Theme.color, height: 50 }}>
-          <Text style={{ color: '#ffffff', marginLeft: 10 }}>{this.props.dto.showName}</Text>
+          <Text style={{ color: '#ffffff', marginLeft: 10 }}>{info.showName}</Text>
           <View style={{ flexDirection: 'row', backgroundColor: Theme.Theme.color, marginTop: 3 }}>
-            <Text style={{ color: '#b9cae0', marginLeft: 10 }}>洗衣机{this.props.dto.number}台</Text>
-            <Text style={{ color: '#b9cae0', marginLeft: 10 }}>空闲{this.props.dto.freeNumber}台</Text>
+            <Text style={{ color: '#b9cae0', marginLeft: 10 }}>洗衣机{info.number}台</Text>
+            <Text style={{ color: '#b9cae0', marginLeft: 10 }}>空闲{info.freeNumber}台</Text>
             <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }} >
-              <Text style={{ color: '#b9cae0' }}>{this.props.dto.distance}</Text>
+              <Text style={{ color: '#b9cae0' }}>{info.distance}</Text>
             </View>
           </View>
         </View>
@@ -179,31 +195,13 @@ export default class MoreResource extends React.Component {
 
   }
 
-  componentWillMount() {
-    if (Platform.OS === 'android') {
-      BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
-    }
-  }
 
-  componentWillUnmount() {
-    if (Platform.OS === 'android') {
-      BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
-    }
-  }
-
-  onBackAndroid = () => {
-    const { navigator } = this.props;
-    const routers = navigator.getCurrentRoutes();
-    if (routers.length > 1) {
-      navigator.pop();
-      return true;
-    }
-    return false;
-  }
 
   componentDidMount() {
     Storage.get('Geolocation').then(data => {
+      if(data)
       this.getListData(data.latitude, data.longitude);
+      else     this.getListData(0,0);
     });
   }
 

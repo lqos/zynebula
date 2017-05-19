@@ -12,7 +12,6 @@ import {
   StyleSheet
 } from 'react-native';
 
-import { Navigator } from 'react-native-deprecated-custom-components'
 var Theme = require('../utils/Theme');
 var Tools = require('../utils/Tools');
 import Storage from '../utils/Storage';
@@ -22,6 +21,9 @@ var mobile = '18232077504';
 var password = '111111';
 
 export default class LogIn extends React.Component {
+  static navigationOptions = ({ navigation }) => ({
+    header: null,
+  })
 
   constructor(props) {
     super(props);
@@ -35,13 +37,15 @@ export default class LogIn extends React.Component {
     return (<View>
       <TitleView
         ClickLeft={() => { this.onBackAndroid() }}
-        leftIcon={<Image tintColor={'#ffffff'} source={require('../image/nav_finish.png')} />}
+        tintColor={'#ffffff'}
+        leftIcon={require('../image/nav_finish.png')}
         title={'登录'} titleColor={'#ffffff'} />
 
       <TextInput
         placeholder={'手机号'}
         keyboardType={'numeric'}
         marginTop={30}
+        maxLength={11}
         style={styles.TextInputS}
         editable={true}
         underlineColorAndroid='transparent' //设置下划线背景色透明 达到去掉下划线的效果
@@ -50,6 +54,7 @@ export default class LogIn extends React.Component {
       <TextInput
         placeholder={'密码'}
         marginTop={30}
+        secureTextEntry={true}
         underlineColorAndroid='transparent' //设置下划线背景色透明 达到去掉下划线的效果
         style={styles.TextInputS}
         onChangeText={(text) => this.onChangeText(1, text)} />
@@ -96,25 +101,17 @@ export default class LogIn extends React.Component {
   }
 
   componentWillMount() {
-    if (Platform.OS === 'android') {
-      BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
-    }
+    BackHandler.addEventListener('hardwareBackPress', this.onBackAndroid);
   }
 
   componentWillUnmount() {
-    if (Platform.OS === 'android') {
-      BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
-    }
+    BackHandler.removeEventListener('hardwareBackPress', this.onBackAndroid);
   }
 
   onBackAndroid = () => {
-    const { navigator } = this.props;
-    const routers = navigator.getCurrentRoutes();
-    if (routers.length > 1) {
-      navigator.pop();
-      return true;
-    }
-    return false;
+    const { goBack } = this.props.navigation;
+    goBack();
+    return true;
   }
 
   getUserInfo() {

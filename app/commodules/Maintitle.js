@@ -8,9 +8,6 @@ import {
   View,
   Image,
   StyleSheet,
-  Platform,
-  StatusBar,
-  BackAndroid,
   TouchableOpacity
 }
   from 'react-native';
@@ -23,13 +20,13 @@ export default class Maintitle extends Component {
       <View style={styles.titleView} >
         <TouchableOpacity onPress={this.props.ClickLeft}>
           <View width={50}>
-            {this.props.leftIcon}
+            <Image tintColor={this.props.tintColor}  source={this.props.leftIcon}/>
           </View>
         </TouchableOpacity>
         <Text style={{ color: this.props.titleColor, fontSize: 18 }}>{this.props.title}</Text>
         <TouchableOpacity onPress={this.props.ClickRight}>
           <View width={50} alignItems={'flex-end'}>
-            {this.props.rightIcon}
+            <Image source={this.props.rightIcon}/>
           </View>
         </TouchableOpacity>
       </View>

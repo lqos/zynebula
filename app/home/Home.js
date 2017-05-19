@@ -2,11 +2,13 @@ import React from 'react';
 import {
     StyleSheet,
     StatusBar,
+    BackHandler
 } from 'react-native';
 import {StackNavigator, TabNavigator, TabBarBottom} from 'react-navigation';
 import TabBarItem from '../widget/TabBarItem';
 import WebScene from '../widget/WebScene'
 import MoreResource from '../pages/MoreResource'
+import OrderDetail from '../pages/OrderDetail';
 import Cartoon from  '../ui/Cartoon';
 import Login from  '../ui/LogIn';
 
@@ -35,6 +37,18 @@ var Theme = require('../utils/Theme');
 
 export default class Home extends React.Component {
 
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.onBackAndroid);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.onBackAndroid);
+  }
+
+  onBackAndroid = () => {
+BackHandler.exitApp();
+    return true;
+  }
     constructor(props) {
         super(props);
         StatusBar.setBarStyle('light-content')
@@ -143,6 +157,7 @@ const Navigator = StackNavigator(
         Cartoon: { screen: Cartoon },
         Login: { screen: Login },
         MoreResource: { screen: MoreResource },
+        OrderDetail:{screen: OrderDetail}
     },
     {
         navigationOptions: {

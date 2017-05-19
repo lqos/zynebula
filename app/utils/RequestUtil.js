@@ -16,7 +16,7 @@
  *
  */
 import Tools from './Tools';
-const HOST = 'https://dev.nebulaedu.com/api/v1/';//测试  正式https://nebulaedu.com/api/v1/
+const HOST = 'https://nebulaedu.com/api/v1/';//测试  正式https://nebulaedu.com/api/v1/
 export const require = (url, method, header, params) => {
   if (params) {
     let paramsArray = [];

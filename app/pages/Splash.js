@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Image
+  Image,BackHandler
 } from 'react-native';
 
 import Home from '../home/Home';
@@ -37,6 +37,18 @@ export default class Splash extends React.Component {
     });
   }
 
+    componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.onBackAndroid);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.onBackAndroid);
+  }
+
+  onBackAndroid = () => {
+    return true;
+  }
+
 
   getUserInfo(data) {
     let header = {};
@@ -61,11 +73,11 @@ export default class Splash extends React.Component {
   getCurrentPosition() {
     Geolocation.getCurrentPosition()
       .then((data) => {
-        console.warn(JSON.stringify(data));
+        // console.warn(JSON.stringify(data));
         Storage.save('Geolocation', data);
       })
       .catch(e => {
-        console.warn(e, 'error');
+        // console.warn(e, 'error');
         this.getSchoolName(0, 0);
       })
   }

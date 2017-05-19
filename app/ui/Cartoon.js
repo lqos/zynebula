@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import {
     View,
@@ -15,6 +15,7 @@ var Theme = require('../utils/Theme');
 var Tools = require('../utils/Tools');
 import * as http from '../utils/RequestUtil';
 import TitleView from '../commodules/Maintitle';
+import * as payDoit from '../ui/payDoit';
 var checkIndex = -1;
 import * as WeChat from 'react-native-wechat';
 
@@ -22,6 +23,9 @@ export default class Cartoon extends React.Component {
     state: {
         data: Object,
     }
+    static navigationOptions = ({ navigation }) => ({
+        header: null,
+    })
 
 
     constructor(props) {
@@ -29,7 +33,7 @@ export default class Cartoon extends React.Component {
         let info = this.props.navigation.state.params.data;
         console.warn(JSON.stringify(info))
         this.state = {
-            packageData: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
+            packageData: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }),
         };
         //
     }
@@ -40,10 +44,18 @@ export default class Cartoon extends React.Component {
     async getFloorCard(id) {
         var url = 'product/package?productId=' + id;
         checkIndex = -1;
-        http.require(url, 'GET', null).then((responseJson) => {
+        let header = {};
+        if (Tools.USER) {
+            header = {
+                'token': Tools.USER.token,
+                'userId': Tools.USER.userId
+            };
+        }
+        console.warn(url);
+        http.require(url, 'GET', header, null).then((responseJson) => {
             if (responseJson.code === 1000) {
                 console.warn(JSON.stringify(responseJson));
-                var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+                var ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
                 this.setState({
                     packageData: ds.cloneWithRows(responseJson.data),
                 });
@@ -87,7 +99,6 @@ export default class Cartoon extends React.Component {
         if (is) {
             return null;
         }
-
         return (<Text style={{
             backgroundColor: '#5A97F3',
             color: '#ffffff',
@@ -118,11 +129,11 @@ export default class Cartoon extends React.Component {
                     marginTop: -25,
                     marginRight: 25
                 }}>
-                    <View style={{backgroundColor: color, width: 3,}}/>
+                    <View style={{ backgroundColor: color, width: 3, }} />
                     <View
-                        style={{flex: 1, backgroundColor: '#ffffff', marginLeft: 15, paddingTop: 8, paddingBottom: 8}}>
-                        <Text style={{color: '#000000', fontSize: 15}}>{info.showName}</Text>
-                        <View style={{alignItems: 'flex-end', flexDirection: 'row', marginTop: 2}}>
+                        style={{ flex: 1, backgroundColor: '#ffffff', marginLeft: 15, paddingTop: 8, paddingBottom: 8 }}>
+                        <Text style={{ color: '#000000', fontSize: 15 }}>{info.showName}</Text>
+                        <View style={{ alignItems: 'flex-end', flexDirection: 'row', marginTop: 2 }}>
                             <Text style={{
                                 backgroundColor: color,
                                 color: '#ffffff',
@@ -134,7 +145,7 @@ export default class Cartoon extends React.Component {
                             }}>{this.getStatus(info)}</Text>
                             {Used}
                             {colleced}
-                            <View style={{flex: 1, alignItems: 'flex-end', marginRight: 10}}>
+                            <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }}>
                                 <Text>{info.distance}</Text>
                             </View>
                         </View>
@@ -149,10 +160,11 @@ export default class Cartoon extends React.Component {
                     ClickLeft={() => {
                         this.onBackAndroid()
                     }}
-                    leftIcon={<Image tintColor={'#ffffff'} source={require('../image/nav_finish.png')}/>}
-                    title={'洗衣机'} titleColor={'#ffffff'}/>
+                    tintColor={'white'}
+                    leftIcon={require('../image/nav_finish.png')}
+                    title={'洗衣机'} titleColor={'#ffffff'} />
 
-                <View style={{backgroundColor: Theme.Theme.color, height: 35}}>
+                <View style={{ backgroundColor: Theme.Theme.color, height: 35 }}>
                 </View>
                 {topView}
 
@@ -163,11 +175,11 @@ export default class Cartoon extends React.Component {
                 />
 
 
-                <View style={{flex: 1, alignItems: 'center', justifyContent: 'center', justifyContent: 'center'}}
-                      activeOpacity={0.8}>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', justifyContent: 'center' }}
+                    activeOpacity={0.8}>
                     <Text>最后消毒时间：{Tools.timeFormt(info.lastCleanTime)}</Text>
                 </View>
-                <View style={{alignItems: 'flex-end', flexDirection: 'row', flex: 1, justifyContent: 'flex-end'}}>
+                <View style={{ alignItems: 'flex-end', flexDirection: 'row', flex: 1, justifyContent: 'flex-end' }}>
                     <TouchableOpacity style={{
                         backgroundColor: '#2275fe',
                         alignItems: 'center',
@@ -175,7 +187,7 @@ export default class Cartoon extends React.Component {
                         height: 50,
                         width: Tools.ScreenSize.width / 2
                     }} activeOpacity={0.8} onPress={() => this.onClick(1)}>
-                        <Text style={{color: 'white'}}>预约使用</Text>
+                        <Text style={{ color: 'white' }}>预约使用</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={{
                         backgroundColor: '#08c847',
@@ -184,7 +196,7 @@ export default class Cartoon extends React.Component {
                         height: 50,
                         width: Tools.ScreenSize.width / 2
                     }} activeOpacity={0.8} onPress={() => this.onClick(2)}>
-                        <Text style={{color: 'white'}}>立即使用</Text>
+                        <Text style={{ color: 'white' }}>立即使用</Text>
                     </TouchableOpacity>
                 </View>
             </View>)
@@ -207,14 +219,14 @@ export default class Cartoon extends React.Component {
                     backgroundColor: '#ffffff',
                     marginTop: 0.6
                 }}>
-                    <Image source={{uri: data.icon}} style={{width: 30, height: 30, marginRight: 5,}}/>
-                    <View style={{flexDirection: 'column'}}>
-                        <Text style={{fontSize: 16, color: '#000000'}}>{data.name}</Text>
-                        <Text style={{fontSize: 12}}>{data.desp}</Text>
+                    <Image source={{ uri: data.icon }} style={{ width: 30, height: 30, marginRight: 5, }} />
+                    <View style={{ flexDirection: 'column' }}>
+                        <Text style={{ fontSize: 16, color: '#000000' }}>{data.name}</Text>
+                        <Text style={{ fontSize: 12 }}>{data.desp}</Text>
                     </View>
-                    <View style={{flexDirection: 'row', justifyContent: 'flex-end', flex: 1}}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', flex: 1 }}>
                         <Text>{data.spend / 100}元</Text>
-                        <Image source={check} style={{width: 20, height: 20, marginLeft: 10}}/>
+                        <Image source={check} style={{ width: 20, height: 20, marginLeft: 10 }} />
                     </View>
                 </View>
             </TouchableOpacity>
@@ -230,6 +242,9 @@ export default class Cartoon extends React.Component {
      生产订单
      */
     onClick(id) {
+        if (!Tools.USER) {
+            return;
+        }
         if (checkIndex === -1) {
             Tools.toastShort('请选择洗衣模式', false);
             return;
@@ -242,28 +257,27 @@ export default class Cartoon extends React.Component {
         }
         let header = {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'token': Tools.USER.token,
+            'userId': Tools.USER.userId
         };
-        if (Tools.USER) {
-            header = {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'token': Tools.USER.token,
-                'userId': Tools.USER.userId
-            };
-        }
-        http.require(url + '?userId=' + Tools.USER.userId + '&productId=' + this.props.id + '&packageId=' + checkIndex, 'POST', header, null)
+
+        let info = this.props.navigation.state.params.data;
+        let htts = url + '?userId=' + Tools.USER.userId + '&productId=' + info.id + '&packageId=' + checkIndex;
+
+        http.postJson(htts, null, header, null)
             .then((data) => {
+                console.warn(JSON.stringify(data));
                 if (data.code === 1000) {
                     Alert.alert(
                         '选择支付方式',
                         '支付金额为' + data.data.spend / 100 + '元',
                         [
-                            {text: '微信', onPress: () => this.makePayOrder(1, data.data)},
-                            {text: '支付宝', onPress: () => this.makePayOrder(2, data.data)},
-                            {text: '取消订单', onPress: () => this.cancelOrder(data.data)},
+                            { text: '微信', onPress: () => this.makePayOrder(1, data.data) },
+                            { text: '支付宝', onPress: () => this.makePayOrder(2, data.data) },
+                            { text: '取消订单', onPress: () => this.cancelOrder(data.data) },
                         ],
-                        {cancelable: false}
+                        { cancelable: false }
                     );
                 } else {
                     Tools.toastShort(data.message, false);
@@ -274,63 +288,22 @@ export default class Cartoon extends React.Component {
     /**
      生产支付业务订单
      */
-    makePayOrder(id, data) {
-        let header = {'Accept': 'application/json', 'Content-Type': 'application/json'};
-        if (Tools.USER) {
-            header = {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'token': Tools.USER.token,
-                'userId': Tools.USER.userId
-            };
-        }
-        if (id === 2) {
-            let param = {
-                'appId': data.p_appId,
-                'orderSn': data.orderNo,
-                'subject': '星云社区洗衣消费',
-                'body': '星云社区洗衣消费',
-                'amount': data.spend + '',
-                'channel': 'alipay'
-            };
-            http.paypostJson('charge/order', null, header, param)
-                .then((data) => {
-                    this.cancelOrder(data);
-                    this.toPay(id, data);
-                    console.warn(JSON.stringify(data));
-                });
-        } else {
-            let param = {
-                'appId': data.p_appId,
-                'orderSn': data.orderNo,
-                'subject': '星云社区洗衣消费',
-                'body': '星云社区洗衣消费',
-                'amount': data.spend + '',
-                'channel': 'wx'
-            };
-            http.paypostJson('charge/order', null, header, param)
-                .then((data) => {
-                    this.payWx(data.data);
-                });
-        }
-
+    makePayOrder(id, orderData) {
+       payDoit.orderCheck(orderData).then(data => {
+            payDoit.makePayOrder(id, orderData).then((data) => { 
+                this.payWx(data); 
+            });
+        }).catch((errstr)=>{
+            Tools.toastShort(errstr,true);
+        })
     }
 
     /**
-     调用未知支付
+     调用微信支付
      */
-    async payWx(data) {
-        console.warn(JSON.stringify(data));
-        let bean = {
-            partnerId: data.partnerid, // 商家向财付通申请的商家id
-            prepayId: data.prePayId,//'1411270102', // 预支付订单
-            nonceStr: data.nonceStr, // 随机串，防重发
-            timeStamp: data.timeStamp, // 时间戳，防重发
-            package: 'Sign=WXPay', // 商家根据财付通文档填写的数据和签名
-            sign: data.paySign// 商家根据微信开放平台文档对数据做的签名
-        };
+    payWx(data) {
         try {
-            WeChat.pay(bean).then((data) => {
+            payDoit.payWx(data).then((data) => {
                 if (data.errCode === 0) {
                     Tools.toastShort('支付成功', false);
                 } else {
@@ -368,17 +341,16 @@ export default class Cartoon extends React.Component {
 
     componentWillMount() {
         BackHandler.addEventListener('hardwareBackPress', this.onBackAndroid);
-
     }
 
     componentWillUnmount() {
         BackHandler.removeEventListener('hardwareBackPress', this.onBackAndroid);
-
     }
 
     onBackAndroid = () => {
-        const {goBack} = this.props.navigation;
+        const { goBack } = this.props.navigation;
         goBack();
+        return true;
     }
 
     componentDidMount() {
@@ -390,15 +362,15 @@ export default class Cartoon extends React.Component {
                 [
                     {
                         text: 'OK', onPress: () => {
-                        const {goBack} = this.props.navigation;
-                        goBack();
-                    }
+                            const { goBack } = this.props.navigation;
+                            goBack();
+                        }
                     },
                 ],
-                {cancelable: false}
+                { cancelable: false }
             );
         } else {
-            this.getFloorCard(this.props.id);
+            this.getFloorCard(info.id);
         }
     }
 

@@ -21,16 +21,14 @@ var Theme = require('../utils/Theme');
 import Swiper from 'react-native-swiper';
 import Storage from '../utils/Storage';
 import MoreResource from './MoreResource';
+import DevieUI from '../widget/DevieUI';
 import Cartoon from '../ui/Cartoon';
 import * as http from '../utils/RequestUtil';
 import LogUi from '../ui/LogIn';
 var page = 1;
 export default class Index extends React.Component {
     static navigationOptions = ({navigation}) => ({
-        title:'首页',
-        titleColor:'white',
-        headerStyle: {backgroundColor: Theme.Theme.color},
-        headerRight: <Text  >dsfdsf</Text>,
+        header: null,
     })
 
     constructor(props) {
@@ -93,16 +91,15 @@ export default class Index extends React.Component {
             };
             urt = urt + '?userId=' + Tools.USER.userId;
         }
-        // console.warn(urt);
         let params = {'latitude': latitude, longitude: longitude, 'parentId': id};
         http.require('product/recommend' + urt, 'GET', header, params).then((responseJson) => {
-            let name = '为您推荐';
+            let name = '我的洗衣机';
+            // if (responseJson.code === 1000) {
+            //     name = '为您推荐';
+            // } else if (responseJson.code === 2000) {
+            //     name = '正在使用';
+            // }
             // console.warn(JSON.stringify(responseJson));
-            if (responseJson.code === 1000) {
-                name = '为您推荐';
-            } else if (responseJson.code === 2000) {
-                name = '正在使用';
-            }
             this.setState({
                 isRefreshing: false,
                 LeftName: name,
@@ -124,7 +121,7 @@ export default class Index extends React.Component {
             };
         }
         var url = 'product/school?longitude=' + longitude + '&latitude=' + latitude;
-        console.warn(url);
+        // console.warn(url);
         http.require(url, 'GET', header, null).then((responseJson) => {
 
             this.setState({
@@ -167,54 +164,6 @@ export default class Index extends React.Component {
 
         });
     }
-
-    getStatus(data) {
-
-        if (data.onOffStatus === 0) {
-            return '离线';
-        }
-        if (data.washStatus === 2) {
-            return ("空闲");
-        } else if (data.washStatus === 1 || data.washStatus === 3) {
-            return (data.washStatus === 1 ? "使用中" : "已预约");
-        } else {
-            return "未知";
-        }
-    }
-
-
-    getStatusColor(data) {
-
-        if (data.onOffStatus === 0) {
-            return '#EE1F09';
-        }
-        if (data.washStatus === 2) {
-            return '#08c847';
-        } else if (data.washStatus === 1 || data.washStatus === 3) {
-            return '#EE1F09';
-            ;
-        } else {
-            return '#EE1F09';
-        }
-    }
-
-    getUseed(is, tag) {
-        if (is) {
-            return null;
-        }
-
-        return (<Text style={{
-            backgroundColor: '#5A97F3',
-            color: '#ffffff',
-            fontSize: 15,
-            marginLeft: 10,
-            padding: 1,
-            paddingRight: 5,
-            paddingLeft: 5,
-            borderRadius: 3
-        }}>{tag}</Text>);
-    }
-
     LookDetail(data) {
         if (Tools.USER) {
             this.props.navigation.navigate('Cartoon', {data: data})
@@ -225,7 +174,6 @@ export default class Index extends React.Component {
         // TODO  如果是预约状态或者是使用状态则跳转订单详情页 （是自己使用或者预约）
 
     }
-
 
     render() {
         var Swiperview;
@@ -275,47 +223,7 @@ export default class Index extends React.Component {
         if (this.state.RecommendData) {
             recommend = (
                 this.state.RecommendData.map((data, i) => {
-                    var color = this.getStatusColor(data);
-                    var Used = this.getUseed(data.collection === 0, '常用');
-                    var colleced = this.getUseed(data.isUse === 0, '收藏');
-                    return (
-                        <TouchableOpacity activeOpacity={0.8} key={i} onPress={() => this.LookDetail(data)}>
-                            <View style={{
-                                flex: 1,
-                                flexDirection: 'row',
-                                backgroundColor: '#fFffff',
-                                marginLeft: 10,
-                                marginTop: 8,
-                                marginRight: 10
-                            }}>
-                                <View style={{backgroundColor: color, width: 3}}/>
-                                <View style={{
-                                    flex: 1,
-                                    backgroundColor: '#ffffff',
-                                    marginLeft: 15,
-                                    paddingTop: 8,
-                                    paddingBottom: 8
-                                }}>
-                                    <Text style={styles.labeStyle}>{data.showName}</Text>
-                                    <View style={{alignItems: 'flex-end', flexDirection: 'row', marginTop: 2}}>
-                                        <Text style={{
-                                            backgroundColor: color,
-                                            color: '#ffffff',
-                                            fontSize: 15,
-                                            padding: 1,
-                                            borderRadius: 3,
-                                            paddingRight: 5,
-                                            paddingLeft: 5
-                                        }}>{this.getStatus(data)}</Text>
-                                        {Used}
-                                        {colleced}
-                                        <View style={{flex: 1, alignItems: 'flex-end', marginRight: 10}}>
-                                            <Text>{data.distance}</Text>
-                                        </View>
-                                    </View>
-                                </View>
-                            </View>
-                        </TouchableOpacity>)
+                    return (<DevieUI key ={i} data={data} onPress={()=>{this.LookDetail(data)}}/>)
                 })
             );
         }

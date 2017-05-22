@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Image,BackHandler
+  Image, BackHandler
 } from 'react-native';
 
 import Home from '../home/Home';
@@ -37,7 +37,7 @@ export default class Splash extends React.Component {
     });
   }
 
-    componentWillMount() {
+  componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this.onBackAndroid);
   }
 
@@ -57,13 +57,14 @@ export default class Splash extends React.Component {
         'token': data.token,
         'userId': data.userId
       };
+      http.require('user/profile', 'GET', header, { 'userId': data.userId }).then((result) => {
+        Tools.CURRINTUSER = result.data;
+        const { navigator } = this.props;
+        navigator.pop();
+        Tools.USER = data;
+      });
     }
-    http.require('user/profile', 'GET', header, { 'userId': data.userId }).then((result) => {
-      Tools.CURRINTUSER = result.data;
-      const { navigator } = this.props;
-      navigator.pop();
-      Tools.USER = data;
-    });
+
   }
 
 

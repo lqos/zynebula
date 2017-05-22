@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import {
   View,
-  BackAndroid,
+  BackHandler,
   Platform,
   TouchableOpacity,
   Text,
@@ -18,6 +18,16 @@ var Tools = require('../utils/Tools');
 var id;
 
 export default class SetUi extends React.Component {
+
+    static navigationOptions = ({ navigation }) => ({
+      header:null,
+    headerTitle: '设置a',
+    headerTintColor:'#aa00ff',
+    headerStyle:{backgroundColor:'#fffff0'},
+    headerRight: <Text style={{ color: '#333333', fontSize: 18, marginRight: 5 }}>submint </Text>,
+  
+  })
+
 
   constructor(props) {
     super(props);
@@ -213,29 +223,19 @@ export default class SetUi extends React.Component {
 
 
 
-
   componentWillMount() {
-    if (Platform.OS === 'android') {
-      BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
-    }
+    BackHandler.addEventListener('hardwareBackPress', this.onBackAndroid);
   }
 
   componentWillUnmount() {
-    if (Platform.OS === 'android') {
-      BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
-    }
+    BackHandler.removeEventListener('hardwareBackPress', this.onBackAndroid);
   }
 
   onBackAndroid = () => {
-    const { navigator } = this.props;
-    const routers = navigator.getCurrentRoutes();
-    if (routers.length > 1) {
-      navigator.pop();
-      return true;
-    }
-    return false;
+    const { goBack } = this.props.navigation;
+    goBack();
+    return true;
   }
-
 
 
 

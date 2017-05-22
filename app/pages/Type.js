@@ -65,25 +65,23 @@ export default class Type extends React.Component {
                         this.tabView = tabView;
                     }}
                 >
-
-                    {
-                        this.state.titleData.map((data, i) => {
-
-                            return <OrderList {...this.props} key={i} tabLabel={data.name} type={data.id} />;
-                        })
-
+                    {this.state.titleData.map((data, i) => {
+                        return <OrderList {...this.props} key={i} tabLabel={data.name} type={data.id} />;
+                    })
                     }
-
                 </ScrollableTabView>
             </View>
         );
     }
 
-      itemOnclik(item) {
-     this.props.navigation.navigate('OrderDetail', {})
+    itemOnclik(item) {
+        this.props.navigation.navigate('OrderDetail', {})
     }
 
- 
+    toLogin = () => {
+        this.props.navigation.navigate('Login', {})
+    }
+
     renderContent(data, i) {
         let datas = this.getOrderData(data.id, 1);
 

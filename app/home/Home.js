@@ -4,13 +4,14 @@ import {
     StatusBar,
     BackHandler
 } from 'react-native';
-import {StackNavigator, TabNavigator, TabBarBottom} from 'react-navigation';
+import { StackNavigator, TabNavigator, TabBarBottom } from 'react-navigation';
 import TabBarItem from '../widget/TabBarItem';
 import WebScene from '../widget/WebScene'
 import MoreResource from '../pages/MoreResource'
 import OrderDetail from '../pages/OrderDetail';
-import Cartoon from  '../ui/Cartoon';
-import Login from  '../ui/LogIn';
+import Cartoon from '../ui/Cartoon';
+import Login from '../ui/LogIn';
+import SetUi from '../ui/SetUi';
 
 const lightContentScenes = ['Home', 'Mine']
 
@@ -37,18 +38,18 @@ var Theme = require('../utils/Theme');
 
 export default class Home extends React.Component {
 
-  componentWillMount() {
-    BackHandler.addEventListener('hardwareBackPress', this.onBackAndroid);
-  }
+    componentWillMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.onBackAndroid);
+    }
 
-  componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this.onBackAndroid);
-  }
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.onBackAndroid);
+    }
 
-  onBackAndroid = () => {
-BackHandler.exitApp();
-    return true;
-  }
+    onBackAndroid = () => {
+        BackHandler.exitApp();
+        return true;
+    }
     constructor(props) {
         super(props);
         StatusBar.setBarStyle('light-content')
@@ -79,9 +80,9 @@ const Tab = TabNavigator(
     {
         Index: {
             screen: Index,
-            navigationOptions: ({navigation}) => ({
+            navigationOptions: ({ navigation }) => ({
                 tabBarLabel: '洗衣',
-                tabBarIcon: ({focused, tintColor}) => (
+                tabBarIcon: ({ focused, tintColor }) => (
                     <TabBarItem
                         tintColor={tintColor}
                         focused={focused}
@@ -93,9 +94,9 @@ const Tab = TabNavigator(
         },
         Type: {
             screen: Type,
-            navigationOptions: ({navigation}) => ({
+            navigationOptions: ({ navigation }) => ({
                 tabBarLabel: '话图',
-                tabBarIcon: ({focused, tintColor}) => (
+                tabBarIcon: ({ focused, tintColor }) => (
                     <TabBarItem
                         tintColor={tintColor}
                         focused={focused}
@@ -108,9 +109,9 @@ const Tab = TabNavigator(
 
         News: {
             screen: News,
-            navigationOptions: ({navigation}) => ({
+            navigationOptions: ({ navigation }) => ({
                 tabBarLabel: '订单',
-                tabBarIcon: ({focused, tintColor}) => (
+                tabBarIcon: ({ focused, tintColor }) => (
                     <TabBarItem
                         tintColor={tintColor}
                         focused={focused}
@@ -123,9 +124,9 @@ const Tab = TabNavigator(
 
         Us: {
             screen: Us,
-            navigationOptions: ({navigation}) => ({
+            navigationOptions: ({ navigation }) => ({
                 tabBarLabel: '我的',
-                tabBarIcon: ({focused, tintColor}) => (
+                tabBarIcon: ({ focused, tintColor }) => (
                     <TabBarItem
                         tintColor={tintColor}
                         focused={focused}
@@ -145,19 +146,21 @@ const Tab = TabNavigator(
         tabBarOptions: {
             activeTintColor: Theme.Theme.color,
             inactiveTintColor: '#979797',
-            style: {backgroundColor: '#ffffff'},
+            style: { backgroundColor: '#ffffff' },
         },
     }
 );
-
+import MessageUI from '../ui/MessageUI';
 const Navigator = StackNavigator(
     {
-        Tab: {screen: Tab},
-        Web: {screen: WebScene},
+        Tab: { screen: Tab },
+        Web: { screen: WebScene },
         Cartoon: { screen: Cartoon },
         Login: { screen: Login },
         MoreResource: { screen: MoreResource },
-        OrderDetail:{screen: OrderDetail}
+        OrderDetail: { screen: OrderDetail },
+        SetUi: { screen: SetUi },
+        MessageUI: { screen: MessageUI }
     },
     {
         navigationOptions: {

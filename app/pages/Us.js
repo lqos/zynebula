@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
     Text,
     StyleSheet,
@@ -11,15 +11,15 @@ import {
 
 var Tools = require('../utils/Tools');
 var Theme = require('../utils/Theme');
-import SetUi from '../ui/SetUi';
+
 import ScoreUi from '../ui/ScoreUI';
 import SellectUI from '../ui/SellectUI';
-import MessageUI from '../ui/MessageUI';
+
 import LogUi from '../ui/LogIn';
 
 export default class Us extends React.Component {
 
-    static navigationOptions = ({navigation}) => ({
+    static navigationOptions = ({ navigation }) => ({
         header: null,
     })
 
@@ -31,34 +31,27 @@ export default class Us extends React.Component {
     }
 
     render() {
-        let header = (<Image style={{width: 80, height: 80, resizeMode: 'contain', borderRadius: 80}}
-                             source={require('../image/icon_header.png')}/>);
+        let header = (<Image style={{ width: 80, height: 80, resizeMode: 'contain', borderRadius: 80 }}
+            source={require('../image/icon_header.png')} />);
         let nickNane = '请登录';
         if (Tools.CURRINTUSER) {
             nickNane = Tools.CURRINTUSER.nickName;
-            header = (<Image style={{width: 80, height: 80, resizeMode: 'contain', borderRadius: 80}}
-                             source={{uri: Tools.CURRINTUSER.portrait}}/>);
+            header = (<Image style={{ width: 80, height: 80, resizeMode: 'contain', borderRadius: 80 }}
+                source={{ uri: Tools.CURRINTUSER.portrait }} />);
         }
         return (
             <ScrollView>
                 <View style={styles.contain}>
 
-                    <Image style={{width: Tools.ScreenSize.width, height: 266}}
-                           source={require('../image/header_bg.png')}>
-                        <View style={styles.titleView}>
-                            <Image style={{tintColor: Theme.Theme.color}} source={this.state.header}/>
-                            <Text style={{color: '#333333', fontSize: 18}}>我的</Text>
-                            <TouchableOpacity onPress={this._onPressButton}>
-                                <Image style={{marginRight: 15, tintColor: Theme.Theme.color}}
-                                       source={require('../image/nav_seach_icon.png')}/>
-                            </TouchableOpacity>
-                        </View>
+                    <Image style={{ width: Tools.ScreenSize.width, height: 266 }}
+                        source={require('../image/header_bg.png')}>
+
                         <View
-                            style={{flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                            style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                             <TouchableOpacity onPress={() => this.setTabindex(99)}>
                                 {header}
                             </TouchableOpacity>
-                            <Text style={{fontSize: 16, marginTop: 10, color: '#333'}}>{nickNane}
+                            <Text style={{ fontSize: 16, marginTop: 10, color: '#333' }}>{nickNane}
                             </Text>
                         </View>
 
@@ -66,93 +59,64 @@ export default class Us extends React.Component {
 
                     <TouchableOpacity onPress={() => this.setTabindex(1)}>
                         <View style={styles.lineStyle}>
-                            <Image source={require('../image/us_reader_icon.png')}/>
+                            <Image source={require('../image/us_reader_icon.png')} />
                             <Text style={styles.line_text}>
-                                订购记录
+                                我的消息
                             </Text>
-                            <Image source={require('../image/icon_enter.png')}/>
+                            <Image source={require('../image/icon_enter.png')} />
                         </View>
                     </TouchableOpacity>
 
-                    <View style={styles.line}/>
+                    <View style={styles.line} />
 
                     <TouchableOpacity onPress={() => this.setTabindex(2)}>
                         <View style={styles.lineStyle}>
-                            <Image source={require('../image/us_message_icon.png')}/>
+                            <Image source={require('../image/us_message_icon.png')} />
                             <Text style={styles.line_text}>
-                                消息
+                                学校认证
                             </Text>
-                            <Image source={require('../image/icon_enter.png')}/>
+                            <Image source={require('../image/icon_enter.png')} />
                         </View>
                     </TouchableOpacity>
 
-                    <View style={styles.line}/>
+                    <View style={styles.line} />
 
 
                     <TouchableOpacity onPress={() => this.setTabindex(3)}>
                         <View style={styles.lineStyle}>
-                            <Image source={require('../image/us_cache_icon.png')}/>
+                            <Image source={require('../image/us_cache_icon.png')} />
                             <Text style={styles.line_text}>
-                                离线缓存
+                                意见反馈
                             </Text>
-                            <Image source={require('../image/icon_enter.png')}/>
+                            <Image source={require('../image/icon_enter.png')} />
                         </View>
                     </TouchableOpacity>
 
 
-                    <View style={styles.line}/>
+                    <View style={styles.line} />
 
                     <TouchableOpacity onPress={() => this.setTabindex(4)}>
                         <View style={styles.lineStyle}>
-                            <Image source={require('../image/us_jilu_icon.png')}/>
+                            <Image source={require('../image/us_jilu_icon.png')} />
                             <Text style={styles.line_text}>
-                                观看记录
+                                常见问Ti
                             </Text>
-                            <Image source={require('../image/icon_enter.png')}/>
+                            <Image source={require('../image/icon_enter.png')} />
                         </View>
                     </TouchableOpacity>
 
-
-                    <View style={styles.line}/>
-
-
-                    <TouchableOpacity onPress={() => this.setTabindex(5)}>
-                        <View style={styles.lineStyle}>
-                            <Image source={require('../image/us_shou_icon.png')}/>
-                            <Text style={styles.line_text}>
-                                收藏
-                            </Text>
-                            <Image source={require('../image/icon_enter.png')}/>
-                        </View>
-                    </TouchableOpacity>
-
-
-                    <View style={styles.line}/>
-
-
-                    <TouchableOpacity onPress={() => this.setTabindex(6)}>
-                        <View style={styles.lineStyle}>
-                            <Image source={require('../image/us_jifen_icon.png')}/>
-                            <Text style={styles.line_text}>
-                                我的积分
-                            </Text>
-                            <Image source={require('../image/icon_enter.png')}/>
-                        </View>
-                    </TouchableOpacity>
-
-
-                    <View style={styles.line}/>
+                    <View style={styles.line} />
 
                     <TouchableOpacity onPress={() => this.setTabindex(7)}>
                         <View style={styles.lineStyle}>
-                            <Image source={require('../image/us_set.png')}/>
+                            <Image source={require('../image/us_set.png')} />
                             <Text style={styles.line_text}>
                                 设置
                             </Text>
-                            <Image source={require('../image/icon_enter.png')}/>
+                            <Image source={require('../image/icon_enter.png')} />
                         </View>
                     </TouchableOpacity>
-                    <View style={styles.line}/>
+                    <View style={styles.line} />
 
                 </View>
             </ScrollView>
@@ -160,31 +124,12 @@ export default class Us extends React.Component {
     }
 
     setTabindex(index) {
-        const {navigator} = this.props;
+        const { navigator } = this.props;
         if (index === 7) {
-            navigator.push({
-                title: 'SetUi',
-                component: SetUi,
-            });
-
-        } else if (index === 6) {
-            navigator.push({
-                title: 'ScoreUi',
-                component: ScoreUi,
-            });
-
-        } else if (index === 5) {
-            navigator.push({
-                title: 'SellectUI',
-                component: SellectUI,
-            });
+            this.props.navigation.navigate('SetUi', {})
 
         } else if (index === 2) {
-            navigator.push({
-                title: 'MessageUI',
-                component: MessageUI,
-            });
-
+            this.props.navigation.navigate('MessageUI', {})
         } else if (index === 99) {
             this.props.navigation.navigate('Login', {})
         }

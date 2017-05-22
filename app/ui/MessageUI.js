@@ -14,6 +14,10 @@ var id;
 import { Navigator } from 'react-native-deprecated-custom-components'
 export default class MessageUI extends React.Component {
 
+  static navigationOptions = ({ navigation }) => ({
+    header: null
+  })
+
   constructor(props) {
     super(props);
     this.state = {

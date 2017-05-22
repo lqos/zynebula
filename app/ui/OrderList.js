@@ -58,7 +58,13 @@ export default class OrderList extends React.Component {
 
     render() {
         if (!Tools.USER) {
-            return (<View flex={1} justifyContent={'center'} alignItems={'center'}><Text style={{ fontSize: 23 }}>点击登录</Text></View>);
+            return (
+                <View flex={1} justifyContent={'center'} alignItems={'center'}>
+                    <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate('Login', {})}>
+                        <Text style={{ fontSize: 23 }}>点击登录</Text>
+                    </TouchableOpacity>
+                </View>
+            );
         }
         return (
             <FlatList

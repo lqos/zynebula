@@ -19,7 +19,7 @@ export default class Maintitle extends Component {
     return (
       <View style={styles.titleView} >
         <TouchableOpacity onPress={this.props.ClickLeft}>
-          <View width={50}>
+          <View width={50} marginLeft={10}>
             <Image tintColor={this.props.tintColor}  source={this.props.leftIcon}/>
           </View>
         </TouchableOpacity>

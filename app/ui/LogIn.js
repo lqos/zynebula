@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import {
   View,
-  BackAndroid,
+  BackHandler,
   Platform,
   TouchableOpacity,
   Text,
@@ -124,9 +124,9 @@ export default class LogIn extends React.Component {
     }
     http.require('user/profile', 'GET', header, { 'userId': Tools.USER.userId }).then((data) => {
       Tools.CURRINTUSER = data.data;
+           this.onBackAndroid();
       DeviceEventEmitter.emit('login', data.data)
-      const { navigator } = this.props;
-      navigator.pop();
+ 
     });
   }
 }

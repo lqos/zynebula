@@ -16,6 +16,7 @@ var Theme = require('../utils/Theme');
 var Tools = require('../utils/Tools');
 import * as http from '../utils/RequestUtil';
 import TitleView from '../commodules/Maintitle';
+import CountTime from '../widget/CountTime';
 var checkIndex = -1;
 var timeLong = -1;
 
@@ -33,8 +34,10 @@ export default class OrderDetail extends React.Component {
         super(props);
         this.state = {
             orderData: null,
+            timeLength_: 0,
         };
         this.getOrderDetails();
+        this.timeLength = 0;
     }
 
     /**
@@ -48,14 +51,14 @@ export default class OrderDetail extends React.Component {
         };
         console.warn(JSON.stringify(header));
         http.require('order/' + orderId, 'GET', header, null).then((data) => {
-            // console.warn(JSON.stringify(data));
+            console.warn(JSON.stringify(data));
             if (data.code === 1000) {
                 this.setState({
                     orderData: data.data,
                 });
             }
         }).catch((error) => {
-
+            console.warn(JSON.stringify(error));
         });
 
     }
@@ -113,8 +116,6 @@ export default class OrderDetail extends React.Component {
 
             </View>)
     }
-
-
 
 
     /**
@@ -184,75 +185,107 @@ export default class OrderDetail extends React.Component {
                 </TouchableOpacity>
             </View>);
         } else if (status === 2 || status === 1) {
-            return (<View style={{ alignItems: 'flex-end', flexDirection: 'row', flex: 1, justifyContent: 'flex-end' }}>
-                <TouchableOpacity style={{
-                    backgroundColor: 'white',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: 50,
-                    width: Tools.ScreenSize.width / 2
-                }} activeOpacity={0.8} onPress={() => this.cancelOrder()}>
-                    <Text style={{ color: '#333333' }}>取消</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={{
-                    backgroundColor: '#08c847',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: 50,
-                    width: Tools.ScreenSize.width / 2
-                }} activeOpacity={0.8} onPress={() => this.makeOder()}>
-                    <Text style={{ color: 'white' }}>付款</Text>
-                </TouchableOpacity>
-            </View>)
-        } else if (status == 3) {
-            return (<View style={{ alignItems: 'flex-end', flexDirection: 'row', flex: 1, justifyContent: 'flex-end' }}>
-                <TouchableOpacity style={{
-                    backgroundColor: 'white',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: 50,
-                    width: Tools.ScreenSize.width / 2
-                }} activeOpacity={0.8} onPress={() => this.refund()}>
-                    <Text style={{ color: '#333333' }}>退款</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={{
-                    backgroundColor: '#08c847',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: 50,
-                    width: Tools.ScreenSize.width / 2
-                }} activeOpacity={0.8} onPress={() => this.onClick(2)}>
-                    <Text style={{ color: 'white' }}>立即启动</Text>
-                </TouchableOpacity>
-            </View>)
-        } else if (status === 8 || status === 13 || status === 5 || status === 10 || status === 4) {
-            if (status === 4) {
+            return (
+                <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
 
-                // timeLong = this.state.
+                    <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                        <Text>请在</Text>
+                        <CountTime timeText={{ color: 'red', fontSize: 19 }} Times={this.state.orderData.haomiao} timeOut={() => this.getOrderDetails()} />
+                        <Text>内完成支付，否则将无法完成订单</Text>
+                    </View>
+                    <View style={{ alignItems: 'flex-end', flexDirection: 'row', flex: 1, justifyContent: 'flex-end' }}>
+                        <TouchableOpacity style={{
+                            backgroundColor: 'white',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: 50,
+                            width: Tools.ScreenSize.width / 2
+                        }} activeOpacity={0.8} onPress={() => this.cancelOrder()}>
+                            <Text style={{ color: '#333333' }}>取消</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{
+                            backgroundColor: '#08c847',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: 50,
+                            width: Tools.ScreenSize.width / 2
+                        }} activeOpacity={0.8} onPress={() => this.makeOder()}>
+                            <Text style={{ color: 'white' }}>付款</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>)
+        } else if (status == 3) {
+            return (
+                <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+
+                    <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                        <Text>请在</Text>
+                        <CountTime timeText={{ color: 'red', fontSize: 19 }} Times={this.state.orderData.haomiao} timeOut={() => this.getOrderDetails()} />
+                        <Text>内启动洗衣机，否则将取消设备预选状态</Text>
+                    </View>
+
+                    <View style={{ alignItems: 'flex-end', flexDirection: 'row', flex: 1, justifyContent: 'flex-end' }}>
+                        <TouchableOpacity style={{
+                            backgroundColor: 'white',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: 50,
+                            width: Tools.ScreenSize.width / 2
+                        }} activeOpacity={0.8} onPress={() => this.refund()}>
+                            <Text style={{ color: '#333333' }}>退款</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{
+                            backgroundColor: '#08c847',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: 50,
+                            width: Tools.ScreenSize.width / 2
+                        }} activeOpacity={0.8} onPress={() => this.onClick(2)}>
+                            <Text style={{ color: 'white' }}>立即启动</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>)
+        } else if (status === 8 || status === 13 || status === 5 || status === 10 || status === 4) {
+            let timeContent;
+
+            if (status === 4) {
+                timeContent = (<View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                    <Text>您的洗衣服务预计</Text>
+                    <Text style={{ color: Theme.Theme.color, fontSize: 19 }}>{this.state.orderData.timeLong} </Text>
+                    <Text>分钟 后完成。谢谢您的使用！</Text>
+                </View>)
+
+
             }
 
-            return (<View style={{ alignItems: 'flex-end', flexDirection: 'row', flex: 1, justifyContent: 'flex-end' }}>
-                <TouchableOpacity style={{
-                    backgroundColor: 'white',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: 50,
-                    width: Tools.ScreenSize.width / 2
-                }} activeOpacity={0.8} onPress={() => this.refund()}>
-                    <Text style={{ color: '#333333' }}>退款</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={{
-                    backgroundColor: '#08c847',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: 50,
-                    width: Tools.ScreenSize.width / 2
-                }} activeOpacity={0.8} onPress={() => this.onBackAndroid()}>
-                    <Text style={{ color: 'white' }}>返回首页</Text>
-                </TouchableOpacity>
-            </View>)
+
+            return (
+                <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+                    {timeContent}
+                    <View style={{ alignItems: 'flex-end', flexDirection: 'row', flex: 1, justifyContent: 'flex-end' }}>
+                        <TouchableOpacity style={{
+                            backgroundColor: 'white',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: 50,
+                            width: Tools.ScreenSize.width / 2
+                        }} activeOpacity={0.8} onPress={() => this.refund()}>
+                            <Text style={{ color: '#333333' }}>退款</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{
+                            backgroundColor: '#08c847',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: 50,
+                            width: Tools.ScreenSize.width / 2
+                        }} activeOpacity={0.8} onPress={() => this.onBackAndroid()}>
+                            <Text style={{ color: 'white' }}>返回首页</Text>
+                        </TouchableOpacity>
+                    </View></View>)
         }
     }
+
+
 
 
     /**
@@ -275,28 +308,22 @@ export default class OrderDetail extends React.Component {
         })
     }
 
-    setTime(times) {
+    setTime() {
+        this.stop();
         this.interval = setInterval(() => {
-            const date = this.getDateData(times);
-            if (date) {
-                this.setState(date);
-            } else {
-                this.stop();
+            this.setState({ timeLength_: this.timeLength-- });
+            if (this.state.data <= 0) {
+                this._timer && clearInterval(this._timer);
+                Tools.toastShort("时间到了", true);
             }
         }, 1000);
-    }
-
-    getDateData() {
-
-
-
-        this.setState({
-            orderData: data.data,
-            timeLong: data.data.haomiao,
-        });
 
     }
 
+    stop() {
+        console.warn('stop');
+        this.interval && clearInterval(this.interval);
+    }
 
 
 
@@ -386,7 +413,7 @@ const styles = StyleSheet.create({
         color: '#777777'
     }, botton: {
         marginTop: 8,
-        alignItems: 'stretch',
+        alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
     }

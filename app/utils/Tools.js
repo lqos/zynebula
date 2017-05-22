@@ -57,6 +57,17 @@ export const timeFormt = (longTimes) => {
   return nowTime = y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
 }
 
+
+export const timeMMSS = (longTimes) => {
+  var date = new Date(longTimes); 
+  var minute = date.getMinutes();
+  var second = date.getSeconds();
+  minute = minute < 10 ? ('0' + minute) : minute;
+  second = second < 10 ? ('0' + second) : second;
+  return nowTime =  minute + ':' + second;
+}
+
+
 //获取屏幕宽度和高度
 export const ScreenSize = {
   width: Dimensions.get('window').width,

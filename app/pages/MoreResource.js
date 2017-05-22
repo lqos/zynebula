@@ -16,7 +16,7 @@ var page = 1;
 export default class MoreResource extends React.Component {
     state: {
         data: Object,
-    }
+    } 
 
     static navigationOptions = ({ navigation }) => ({
         header: null,

@@ -4,6 +4,8 @@ import {
     StatusBar,
     BackHandler
 } from 'react-native';
+
+
 import { StackNavigator, TabNavigator, TabBarBottom } from 'react-navigation';
 import TabBarItem from '../widget/TabBarItem';
 import WebScene from '../widget/WebScene'
@@ -12,6 +14,8 @@ import OrderDetail from '../pages/OrderDetail';
 import Cartoon from '../ui/Cartoon';
 import Login from '../ui/LogIn';
 import SetUi from '../ui/SetUi';
+import MessageUI from '../ui/MessageUI';
+
 
 const lightContentScenes = ['Home', 'Mine']
 
@@ -35,32 +39,42 @@ import Us from '../pages/Us';
 
 var Theme = require('../utils/Theme');
 
+var codeTime = 100;
 
 export default class Home extends React.Component {
 
     componentWillMount() {
+        // console.warn('Home---> componentWillMount');
         BackHandler.addEventListener('hardwareBackPress', this.onBackAndroid);
     }
 
     componentWillUnmount() {
+        // console.warn('Home---> componentWillUnmount');
         BackHandler.removeEventListener('hardwareBackPress', this.onBackAndroid);
     }
-
+    getInitalState() {
+        // console.warn('Home---> getInitalState');
+    }
+    componentDidMount() {
+        // console.warn('Home---> componentDidMount');
+    }
     onBackAndroid = () => {
         BackHandler.exitApp();
         return true;
     }
     constructor(props) {
+        // console.warn('Home---> constructor');
         super(props);
         StatusBar.setBarStyle('light-content')
-
     }
 
     render() {
+        // console.warn('Home---> render');
         return (
             <Navigator
                 onNavigationStateChange={
                     (prevState, currentState) => {
+                        {/*console.warn(JSON.stringify(currentState) + '<--->' + JSON.stringify(prevState));*/}
                         const currentScene = getCurrentRouteName(currentState);
                         const previousScene = getCurrentRouteName(prevState);
                         if (previousScene !== currentScene) {
@@ -150,7 +164,7 @@ const Tab = TabNavigator(
         },
     }
 );
-import MessageUI from '../ui/MessageUI';
+
 const Navigator = StackNavigator(
     {
         Tab: { screen: Tab },
